@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Momen — MVP Technical Brief v1.1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black:   #0e0e0d;
+    --white:   #f7f5f0;
+    --ink:     #1c1c1a;
+    --muted:   #6b6b66;
+    --border:  #d4d0c8;
+    --surface: #f0ede6;
+    --coral:   #d85a30;
+    --coral-l: #faeae3;
+    --teal:    #1d9e75;
+    --teal-l:  #e1f5ee;
+    --amber:   #b06a0a;
+    --amber-l: #fdf0dc;
+    --purple:  #534ab7;
+    --purple-l:#eeedfe;
+    --mono: 'DM Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--white);
+    color: var(--ink);
+    line-height: 1.65;
+    font-size: 15px;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--black);
+    border-bottom: 1px solid #2a2a28;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    height: 52px;
+  }
+  .nav-logo {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--white);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .nav-meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: #666660;
+    letter-spacing: 0.06em;
+  }
+  .nav-links {
+    display: flex;
+    gap: 24px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: #888882;
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.15s;
+  }
+  .nav-links a:hover { color: var(--coral); }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--black);
+    padding: 80px 40px 64px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(216,90,48,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--coral);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 24px; height: 1px;
+    background: var(--coral);
+  }
+  .hero h1 {
+    font-family: var(--sans);
+    font-size: clamp(36px, 5vw, 58px);
+    font-weight: 300;
+    color: var(--white);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    max-width: 680px;
+    margin-bottom: 24px;
+  }
+  .hero h1 strong {
+    font-weight: 600;
+    color: var(--white);
+  }
+  .hero-loop {
+    background: rgba(216,90,48,0.1);
+    border: 1px solid rgba(216,90,48,0.3);
+    border-radius: 6px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: #d4a99a;
+    letter-spacing: 0.04em;
+    max-width: 560px;
+    margin-bottom: 36px;
+    line-height: 1.7;
+  }
+  .hero-loop span { color: var(--coral); font-weight: 500; }
+  .hero-meta {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .hero-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .hero-meta-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: #555550;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .hero-meta-value {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: #aaa89e;
+  }
+
+  /* ── LAYOUT ── */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  /* ── TOC ── */
+  .toc-strip {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 40px;
+  }
+  .toc-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .toc-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-right: 8px;
+  }
+  .toc-link {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    text-decoration: none;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 10px;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .toc-link:hover {
+    border-color: var(--coral);
+    color: var(--coral);
+  }
+
+  /* ── SECTIONS ── */
+  .section {
+    padding: 56px 0 0;
+  }
+  .section:last-of-type { padding-bottom: 80px; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--black);
+    color: var(--white);
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .section-num.coral  { background: var(--coral); }
+  .section-num.teal   { background: var(--teal); }
+  .section-num.amber  { background: var(--amber); }
+  .section-num.purple { background: var(--purple); }
+
+  .section-title-group h2 {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .section-title-group p {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 3px;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── PROSE ── */
+  .prose {
+    color: #3a3a38;
+    font-size: 15px;
+    line-height: 1.7;
+    margin-bottom: 20px;
+  }
+
+  /* ── CALLOUT ── */
+  .callout {
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 20px 0;
+    font-size: 14px;
+    line-height: 1.65;
+  }
+  .callout.teal   { background: var(--teal-l);   border-left: 3px solid var(--teal);   color: #1a5c43; }
+  .callout.coral  { background: var(--coral-l);  border-left: 3px solid var(--coral);  color: #8a3318; }
+  .callout.amber  { background: var(--amber-l);  border-left: 3px solid var(--amber);  color: #7a4906; }
+  .callout.purple { background: var(--purple-l); border-left: 3px solid var(--purple); color: #302d80; }
+  .callout-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 6px;
+    opacity: 0.7;
+  }
+  .callout code {
+    font-family: var(--mono);
+    font-size: 13px;
+    background: rgba(0,0,0,0.06);
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+
+  /* ── BULLET LISTS ── */
+  .bullet-list {
+    list-style: none;
+    margin: 12px 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .bullet-list li {
+    display: flex;
+    gap: 12px;
+    font-size: 14.5px;
+    color: #3a3a38;
+    line-height: 1.6;
+  }
+  .bullet-list li::before {
+    content: '—';
+    color: var(--coral);
+    font-family: var(--mono);
+    font-size: 13px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .bullet-list li strong { color: var(--ink); }
+
+  /* ── NUMBERED STEPS ── */
+  .step-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 12px 0 20px;
+  }
+  .step-list li {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    font-size: 14px;
+    color: #3a3a38;
+    line-height: 1.6;
+    padding: 8px 14px;
+    background: var(--surface);
+    border-radius: 6px;
+    border: 1px solid var(--border);
+  }
+  .step-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--white);
+    background: var(--ink);
+    border-radius: 4px;
+    padding: 2px 7px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .step-num.teal { background: var(--teal); }
+  .step-list li strong { color: var(--ink); }
+
+  /* ── SUBHEADING ── */
+  .subhead {
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--mono);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin: 28px 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .subhead::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── TABLE ── */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    margin: 16px 0 24px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .data-table thead th {
+    background: var(--black);
+    color: var(--white);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 12px 16px;
+    text-align: left;
+  }
+  .data-table tbody tr:nth-child(even) { background: var(--surface); }
+  .data-table tbody tr:nth-child(odd)  { background: var(--white); }
+  .data-table td {
+    padding: 12px 16px;
+    color: #3a3a38;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.55;
+  }
+  .data-table td:first-child {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .data-table tbody tr:last-child td { border-bottom: none; }
+
+  /* ── SCOPE GRID ── */
+  .scope-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0 24px;
+  }
+  .scope-card {
+    border-radius: 8px;
+    padding: 18px 20px;
+    border: 1px solid var(--border);
+  }
+  .scope-card.in  { background: var(--teal-l);  border-color: #9FE1CB; }
+  .scope-card.out { background: #fdf0f0; border-color: #f5c4c4; }
+  .scope-card-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 12px;
+  }
+  .scope-card.in  .scope-card-label { color: var(--teal); }
+  .scope-card.out .scope-card-label { color: #c0392b; }
+  .scope-card ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .scope-card ul li {
+    font-size: 13px;
+    color: #3a3a38;
+    display: flex;
+    gap: 8px;
+    line-height: 1.5;
+  }
+  .scope-card.in  ul li::before { content: '✓'; color: var(--teal); font-weight: 600; }
+  .scope-card.out ul li::before { content: '✗'; color: #c0392b; font-weight: 600; }
+
+  /* ── DOD ── */
+  .dod-group { margin-bottom: 28px; }
+  .dod-group-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  /* ── HANDOFF ── */
+  .handoff-card {
+    background: var(--black);
+    border-radius: 10px;
+    padding: 28px 32px;
+    margin-top: 8px;
+  }
+  .handoff-card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .handoff-card h3::before {
+    content: '!';
+    width: 26px; height: 26px;
+    background: var(--coral);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .handoff-card ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .handoff-card ul li {
+    font-size: 14px;
+    color: #b0ada6;
+    line-height: 1.6;
+    padding-left: 20px;
+    position: relative;
+  }
+  .handoff-card ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--coral);
+    font-family: var(--mono);
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 48px 0 0;
+  }
+
+  /* ── METHOD CARDS ── */
+  .method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+  .method-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .method-card-header {
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: var(--white);
+  }
+  .method-card-header.coral  { background: var(--coral); }
+  .method-card-header.teal   { background: var(--teal); }
+  .method-card-body { padding: 16px 18px; background: var(--white); }
+  .method-card-body ul { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+  .method-card-body ul li {
+    font-size: 13px;
+    color: #3a3a38;
+    line-height: 1.55;
+    display: flex;
+    gap: 8px;
+  }
+  .method-card-body ul li::before { content: '·'; color: var(--muted); font-size: 16px; line-height: 1.4; }
+
+  /* ── FORMULA ── */
+  .formula {
+    font-family: var(--mono);
+    font-size: 13px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 18px;
+    margin: 12px 0;
+    color: var(--ink);
+    display: inline-block;
+  }
+  .formula em { color: var(--coral); font-style: normal; font-weight: 500; }
+
+  /* ── QUESTIONS ── */
+  .questions { display: flex; flex-direction: column; gap: 10px; margin: 16px 0; }
+  .question {
+    display: flex;
+    gap: 14px;
+    padding: 14px 18px;
+    background: var(--surface);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    font-size: 14px;
+    color: #3a3a38;
+    line-height: 1.55;
+  }
+  .question::before {
+    content: '?';
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--white);
+    background: var(--purple);
+    border-radius: 50%;
+    width: 22px; height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .hero > * {
+    animation: fadeUp 0.5s ease both;
+  }
+  .hero > *:nth-child(1) { animation-delay: 0.05s; }
+  .hero > *:nth-child(2) { animation-delay: 0.1s; }
+  .hero > *:nth-child(3) { animation-delay: 0.17s; }
+  .hero > *:nth-child(4) { animation-delay: 0.24s; }
+  .hero > *:nth-child(5) { animation-delay: 0.3s; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 680px) {
+    nav { padding: 0 20px; }
+    .nav-links { display: none; }
+    .hero { padding: 48px 20px 40px; }
+    .container { padding: 0 20px; }
+    .toc-strip { padding: 16px 20px; }
+    .scope-grid { grid-template-columns: 1fr; }
+    .method-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-logo">Momen</span>
+  <ul class="nav-links">
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#sessions">Sessions</a></li>
+    <li><a href="#logging">Logging</a></li>
+    <li><a href="#sync">Sync</a></li>
+    <li><a href="#export">Export</a></li>
+    <li><a href="#dod">Done</a></li>
+    <li><a href="#handoff">Handoff</a></li>
+  </ul>
+  <span class="nav-meta">v1.1 — Confidential</span>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="container" style="padding-left:0;padding-right:0;">
+    <div class="hero-eyebrow">MVP Technical Brief</div>
+    <h1>Build the thing that <strong>actually works.</strong></h1>
+    <div class="hero-loop">
+      <div>Core loop —</div>
+      <div><span>Sync</span> to camera timecode → <span>tap</span> to log a marker → <span>export</span> in a format an editor opens directly in their NLE</div>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Version</span>
+        <span class="hero-meta-value">1.1</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Platform</span>
+        <span class="hero-meta-value">iOS 15+</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Prepared for</span>
+        <span class="hero-meta-value">Development Team</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Status</span>
+        <span class="hero-meta-value">Ready for build</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOC -->
+<div class="toc-strip">
+  <div class="toc-inner">
+    <span class="toc-label">Jump to</span>
+    <a class="toc-link" href="#overview">Overview</a>
+    <a class="toc-link" href="#sessions">01 Sessions</a>
+    <a class="toc-link" href="#logging">02 Logging</a>
+    <a class="toc-link" href="#sync">03 Sync</a>
+    <a class="toc-link" href="#display">04 Display</a>
+    <a class="toc-link" href="#export">05 Export</a>
+    <a class="toc-link" href="#scope">Scope</a>
+    <a class="toc-link" href="#constraints">Constraints</a>
+    <a class="toc-link" href="#dod">Definition of Done</a>
+    <a class="toc-link" href="#stack">Stack</a>
+    <a class="toc-link" href="#questions">Questions</a>
+    <a class="toc-link" href="#handoff">Handoff</a>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- OVERVIEW -->
+  <section class="section" id="overview">
+    <p class="prose">Momen is a mobile application that allows filmmakers to log timestamped markers during a shoot and export those markers in formats natively readable by professional editing software. The MVP is intentionally narrow in scope — it must do one thing perfectly before it does anything else.</p>
+    <div class="callout teal">
+      <div class="callout-label">Platform</div>
+      iOS first. Swift or React Native are both acceptable. Must support iPhone running iOS 15 and above. iPad support is desirable but not required for MVP.
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 1 — SESSIONS -->
+  <section class="section" id="sessions">
+    <div class="section-header">
+      <div class="section-num coral">1</div>
+      <div class="section-title-group">
+        <h2>Session Management</h2>
+        <p>A session represents a single shoot or shooting day</p>
+      </div>
+    </div>
+    <p class="prose">The user must be able to create a named session before logging begins. Each session stores all markers logged during that period.</p>
+    <ul class="bullet-list">
+      <li>Create a new session with a name and optional date</li>
+      <li>Complete a timecode sync step before marker logging is enabled <em>(see section 3)</em></li>
+      <li>Open an existing session to review markers</li>
+      <li>Delete a session</li>
+    </ul>
+    <div class="callout amber">
+      <div class="callout-label">Constraint</div>
+      Sessions are stored locally on the device. Cloud sync is out of scope for MVP.
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 2 — LOGGING -->
+  <section class="section" id="logging">
+    <div class="section-header">
+      <div class="section-num coral">2</div>
+      <div class="section-title-group">
+        <h2>Marker Logging</h2>
+        <p>The primary action of the entire application</p>
+      </div>
+    </div>
+    <p class="prose">When the user taps the main button, a marker is logged. Each marker must capture and store:</p>
+    <ul class="bullet-list">
+      <li><strong>Adjusted timestamp</strong> — device clock time at exact moment of tap, offset-corrected, expressed in SMPTE format <code style="font-family:var(--mono);font-size:12px;background:var(--surface);padding:2px 6px;border-radius:3px;">HH:MM:SS:FF</code></li>
+      <li><strong>Marker number</strong> — sequential within the session (Marker 1, Marker 2…)</li>
+      <li><strong>Optional note</strong> — short text attached to the marker, entered immediately after logging</li>
+      <li><strong>Sync flag</strong> — boolean indicating whether the marker is a designated sync point</li>
+    </ul>
+    <div class="subhead">UX Requirements</div>
+    <ul class="bullet-list">
+      <li>Tap-to-mark action must be instantaneous — no perceptible delay</li>
+      <li>Button must be large, centred, and tappable with one thumb</li>
+      <li>Haptic feedback must fire on every successful log — <code style="font-family:var(--mono);font-size:12px;background:var(--surface);padding:2px 6px;border-radius:3px;">UIImpactFeedbackGenerator</code> at medium weight</li>
+      <li>Session view shows a chronological list: marker number, adjusted timecode, note</li>
+      <li>User can delete an individual marker from the list</li>
+    </ul>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 3 — SYNC -->
+  <section class="section" id="sync">
+    <div class="section-header">
+      <div class="section-num coral">3</div>
+      <div class="section-title-group">
+        <h2>Timecode Sync</h2>
+        <p>Most critical component — marker logging is locked until complete</p>
+      </div>
+    </div>
+    <div class="callout coral">
+      <div class="callout-label">Critical</div>
+      Without a reliable timecode reference, exported markers will not align to footage in the NLE and the product does not work. The sync step is mandatory.
+    </div>
+
+    <p class="prose" style="margin-top:20px;">On session creation, before the main logging screen is presented, the app must display a sync screen offering two methods.</p>
+
+    <div class="method-grid">
+      <div class="method-card">
+        <div class="method-card-header coral">Method A — Manual Offset Sync</div>
+        <div class="method-card-body">
+          <p style="font-size:13px;color:#3a3a38;margin-bottom:12px;">User reads timecode from camera display and enters it. The moment they tap Sync, the app records:</p>
+          <ul>
+            <li>Camera timecode as entered <strong>(T_camera)</strong></li>
+            <li>Device clock at the instant of tap <strong>(T_device)</strong></li>
+            <li>Offset = T_camera − T_device</li>
+          </ul>
+        </div>
+      </div>
+      <div class="method-card">
+        <div class="method-card-header teal">Method B — Clap Sync</div>
+        <div class="method-card-body">
+          <p style="font-size:13px;color:#3a3a38;margin-bottom:12px;">User taps marker button and claps in front of camera simultaneously. The resulting marker is stored as:</p>
+          <ul>
+            <li>Label: <strong>SYNC</strong></li>
+            <li>Flagged as sync point in session data</li>
+            <li>Editor completes offset alignment in NLE</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="subhead">Offset Formula</div>
+    <div class="formula">Marker timecode = <em>T_tap</em> + <em>Offset</em></div>
+    <p class="prose" style="margin-top:12px;">Every marker logged in a manual offset session must have the offset applied before the timecode is stored. The offset value must be stored against the session and displayed so the user can verify or re-trigger sync at any point. Re-syncing overwrites the previous offset for all subsequent markers; markers logged before the re-sync retain their original timecodes.</p>
+
+    <div class="subhead">Sync Status Display</div>
+    <ul class="bullet-list">
+      <li>Which sync method was used (Manual Offset or Clap Sync)</li>
+      <li>For manual offset: the recorded offset value and time the sync was performed</li>
+      <li>For clap sync: a reminder that the editor must complete the alignment step</li>
+      <li>A Re-sync button allowing the user to repeat the sync at any point during the session</li>
+    </ul>
+
+    <div class="callout teal" style="margin-top:20px;">
+      <div class="callout-label">Clap Sync Export Note</div>
+      The SYNC marker must appear as the first marker in all export files with the note: <em>"Align this marker to the frame of the clap in your footage to synchronise all subsequent markers."</em>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 4 — DISPLAY -->
+  <section class="section" id="display">
+    <div class="section-header">
+      <div class="section-num coral">4</div>
+      <div class="section-title-group">
+        <h2>Timecode Display</h2>
+        <p>Running counter visible on the main logging screen at all times</p>
+      </div>
+    </div>
+    <p class="prose">For manual offset sessions, the counter must display the offset-adjusted timecode in real time — the user should see the same timecode their camera is displaying, confirming sync is active. For clap sync sessions, the counter displays the raw device clock timecode.</p>
+
+    <div class="subhead">Frame Rate Selection</div>
+    <p class="prose">User-selectable from settings. Must be stored against each session record — required for correct EDL generation at export.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 20px;">
+      <span style="font-family:var(--mono);font-size:12px;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:5px 12px;">23.976</span>
+      <span style="font-family:var(--mono);font-size:12px;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:5px 12px;">24</span>
+      <span style="font-family:var(--mono);font-size:12px;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:5px 12px;">25</span>
+      <span style="font-family:var(--mono);font-size:12px;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:5px 12px;">29.97</span>
+      <span style="font-family:var(--mono);font-size:12px;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:5px 12px;">30</span>
+    </div>
+    <div class="callout amber">
+      <div class="callout-label">Warning</div>
+      An incorrect frame rate will cause markers to land on the wrong frame in the NLE. This is non-recoverable without a full re-export.
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 5 — EXPORT -->
+  <section class="section" id="export">
+    <div class="section-header">
+      <div class="section-num coral">5</div>
+      <div class="section-title-group">
+        <h2>Export</h2>
+        <p>Three formats generated simultaneously — all must work without manual reformatting</p>
+      </div>
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Format</th>
+          <th>Target NLE</th>
+          <th>Key Requirements</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>CSV</td>
+          <td>Universal</td>
+          <td>One row per marker. Columns: Marker Number, Timecode, Duration (default 1s), Note, Sync Point (TRUE/FALSE).</td>
+        </tr>
+        <tr>
+          <td>FCPXML 1.9</td>
+          <td>Final Cut Pro</td>
+          <td>Must validate against Apple FCPXML 1.9 DTD. Each marker as a chapter marker. Note text as marker name. SYNC marker as first entry with editor instruction.</td>
+        </tr>
+        <tr>
+          <td>EDL (CMX 3600)</td>
+          <td>Premiere Pro, DaVinci Resolve</td>
+          <td>Single-frame edit event per marker. Note text in comment field. Drop-frame notation at 29.97fps. Non-drop-frame for all other rates. SYNC marker as first event.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="subhead">Export Behaviour</div>
+    <ul class="bullet-list">
+      <li>All three formats generated simultaneously on export trigger</li>
+      <li>iOS share sheet presented — AirDrop to Mac, save to Files, or any share extension</li>
+      <li>Files named: <code style="font-family:var(--mono);font-size:12px;background:var(--surface);padding:2px 6px;border-radius:3px;">SessionName_YYYYMMDD_markers.csv / .fcpxml / .edl</code></li>
+    </ul>
+
+    <div class="callout teal" style="margin-top:16px;">
+      <div class="callout-label">Clap Sync — Export Confirmation Screen</div>
+      Must display before the share sheet: <em>"Your export includes a SYNC marker. Share these files with your editor and ask them to align the SYNC marker to the frame of the clap in your footage. This will automatically align all subsequent markers to the correct position on the timeline."</em>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- SCOPE -->
+  <section class="section" id="scope">
+    <h2 style="font-size:20px;font-weight:600;letter-spacing:-0.02em;margin-bottom:20px;">Scope</h2>
+    <div class="scope-grid">
+      <div class="scope-card in">
+        <div class="scope-card-label">In scope — MVP</div>
+        <ul>
+          <li>Session management (local)</li>
+          <li>Timecode sync (manual + clap)</li>
+          <li>One-tap marker logging</li>
+          <li>Optional text notes per marker</li>
+          <li>Running timecode display</li>
+          <li>Frame rate selection</li>
+          <li>CSV export</li>
+          <li>FCPXML 1.9 export</li>
+          <li>EDL (CMX 3600) export</li>
+          <li>iOS share sheet</li>
+          <li>Haptic feedback</li>
+        </ul>
+      </div>
+      <div class="scope-card out">
+        <div class="scope-card-label">Out of scope — do not build</div>
+        <ul>
+          <li>BLE hardware connectivity</li>
+          <li>LTC audio timecode decoding</li>
+          <li>QR code or slate scanning</li>
+          <li>Cloud sync or accounts</li>
+          <li>User authentication</li>
+          <li>AI transcription or voice notes</li>
+          <li>Role-specific dashboards</li>
+          <li>Team or multi-user features</li>
+          <li>GoPro API integration</li>
+          <li>In-app payment or subscription</li>
+          <li>Android support</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- CONSTRAINTS -->
+  <section class="section" id="constraints">
+    <h2 style="font-size:20px;font-weight:600;letter-spacing:-0.02em;margin-bottom:20px;">Technical Constraints</h2>
+    <ul class="bullet-list">
+      <li>Application must function entirely offline — no network connection required for any MVP feature</li>
+      <li>All data stored locally using Core Data or SQLite — no external database dependency</li>
+      <li>Offset calculation must use <code style="font-family:var(--mono);font-size:12px;background:var(--surface);padding:2px 6px;border-radius:3px;">CACurrentMediaTime</code> for highest precision — minimises drift between sync tap and first marker</li>
+      <li>FCPXML output must validate against the FCPXML 1.9 DTD before the build is considered complete — invalid FCPXML silently fails to import in Final Cut Pro</li>
+      <li>EDL must use drop-frame notation for 29.97fps and non-drop-frame for all other rates — incorrect notation causes timecode drift in the NLE</li>
+      <li>Application must be tested against all three NLEs with markers verified at correct timecode positions — both manual offset and clap sync sessions</li>
+      <li>UI should be functional and clean — design polish is phase two, functionality is the priority</li>
+    </ul>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- DEFINITION OF DONE -->
+  <section class="section" id="dod">
+    <div class="section-header">
+      <div class="section-num teal">✓</div>
+      <div class="section-title-group">
+        <h2>Definition of Done</h2>
+        <p>All 19 steps must pass without error before the build is considered complete</p>
+      </div>
+    </div>
+
+    <div class="dod-group">
+      <div class="dod-group-title">Manual Offset Sync Workflow — Steps 1–11</div>
+      <ol class="step-list">
+        <li><span class="step-num teal">1</span>User opens the app and creates a session named "Test Shoot"</li>
+        <li><span class="step-num teal">2</span>User is presented with the sync screen and enters a timecode of 01:00:00:00, tapping Sync immediately</li>
+        <li><span class="step-num teal">3</span>The session view displays the offset and confirms manual sync is active</li>
+        <li><span class="step-num teal">4</span>The running timecode display shows the offset-adjusted timecode in real time</li>
+        <li><span class="step-num teal">5</span>User logs 10 markers at irregular intervals, adding a text note to 3 of them</li>
+        <li><span class="step-num teal">6</span>User triggers export from the session view</li>
+        <li><span class="step-num teal">7</span>All three export files are generated and named correctly</li>
+        <li><span class="step-num teal">8</span>FCPXML imported into Final Cut Pro — all 10 markers at correct offset-adjusted timecode positions with notes visible</li>
+        <li><span class="step-num teal">9</span>EDL imported into DaVinci Resolve — all 10 markers at correct offset-adjusted timecode positions</li>
+        <li><span class="step-num teal">10</span>EDL imported into Premiere Pro — all 10 markers at correct offset-adjusted timecode positions</li>
+        <li><span class="step-num teal">11</span>CSV opened in Excel — all 10 markers present with correct timecodes and notes</li>
+      </ol>
+    </div>
+
+    <div class="dod-group">
+      <div class="dod-group-title">Clap Sync Workflow — Steps 12–17</div>
+      <ol class="step-list">
+        <li><span class="step-num teal">12</span>User creates a second session and selects clap sync</li>
+        <li><span class="step-num teal">13</span>User taps the marker button — a SYNC marker is created as the first marker in the session</li>
+        <li><span class="step-num teal">14</span>User logs 5 further markers</li>
+        <li><span class="step-num teal">15</span>User exports — all three files generated with SYNC marker as first entry and editor instruction in note field</li>
+        <li><span class="step-num teal">16</span>Export confirmation screen displays the clap sync editor instruction before the share sheet appears</li>
+        <li><span class="step-num teal">17</span>Editor import instruction verified to be clear and actionable by a person who has not used Momen before</li>
+      </ol>
+    </div>
+
+    <div class="dod-group">
+      <div class="dod-group-title">Environment — Steps 18–19</div>
+      <ol class="step-list">
+        <li><span class="step-num teal">18</span>The entire manual offset flow repeated on a device that has never had the app installed, with no internet connection</li>
+        <li><span class="step-num teal">19</span>The entire clap sync flow repeated on a device that has never had the app installed, with no internet connection</li>
+      </ol>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- STACK -->
+  <section class="section" id="stack">
+    <h2 style="font-size:20px;font-weight:600;letter-spacing:-0.02em;margin-bottom:8px;">Recommended Stack</h2>
+    <p class="prose">A suggestion, not a mandate. Use whatever stack allows reliable, fast delivery of the definition of done above.</p>
+    <table class="data-table">
+      <thead>
+        <tr><th>Component</th><th>Recommendation</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Language</td><td>Swift (preferred) or React Native</td><td>Swift preferred for native iOS performance and haptics</td></tr>
+        <tr><td>Local storage</td><td>Core Data or SQLite via GRDB</td><td>No external database dependency</td></tr>
+        <tr><td>Haptics</td><td>UIImpactFeedbackGenerator</td><td>Medium weight. Fire on every marker log.</td></tr>
+        <tr><td>System clock</td><td>CACurrentMediaTime</td><td>Highest precision for offset calculation</td></tr>
+        <tr><td>Export</td><td>Native file generation</td><td>No third-party XML or CSV libraries required</td></tr>
+        <tr><td>Share sheet</td><td>UIActivityViewController</td><td>Standard iOS share sheet</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- QUESTIONS -->
+  <section class="section" id="questions">
+    <h2 style="font-size:20px;font-weight:600;letter-spacing:-0.02em;margin-bottom:20px;">Questions for the Development Team</h2>
+    <div class="questions">
+      <div class="question">What is the realistic timeline to a testable build against the definition of done above?</div>
+      <div class="question">Is Swift or React Native the preferred approach and why?</div>
+      <div class="question">Is there any ambiguity in the FCPXML 1.9 specification that needs clarification before build begins?</div>
+      <div class="question">What does the testing process look like for the NLE import validation step?</div>
+      <div class="question">What is the approach to testing timecode drift over a long session — for example a ten-hour shooting day — to verify the offset remains stable?</div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- HANDOFF -->
+  <section class="section" id="handoff">
+    <div class="handoff-card">
+      <h3>Handoff Notes</h3>
+      <ul>
+        <li>The sync implementation and export validation against real NLEs are the two highest risk items in this build. Treat them as such from day one.</li>
+        <li>The offset calculation must be tested over extended sessions to confirm there is no drift. A one-frame drift over a ten-hour shoot is acceptable. A one-second drift is not.</li>
+        <li>The FCPXML specification has edge cases that are not well documented and will require careful testing. Budget additional time for NLE validation specifically — this is where most implementations of this type encounter unexpected failures.</li>
+        <li>The UI requires no design assets for MVP. A functional wireframe is sufficient. Brand and visual identity are applied in version two.</li>
+      </ul>
+    </div>
+  </section>
+
+</div>
+
+<!-- FOOTER -->
+<div style="background:var(--black);margin-top:60px;padding:24px 40px;text-align:center;">
+  <p style="font-family:var(--mono);font-size:11px;color:#444440;letter-spacing:0.06em;">MOMEN — MVP TECHNICAL BRIEF — VERSION 1.1 — CONFIDENTIAL</p>
+</div>
+
+</body>
+</html>

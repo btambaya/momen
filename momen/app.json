@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "momen",
+    "slug": "momen",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "backgroundColor": "#0A0A0F",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0A0A0F"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "backgroundColor": "#0A0A0F",
+      "bundleIdentifier": "com.ahmadtambaya.momen"
+    },
+    "android": {
+      "package": "com.ahmadtambaya.momen",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0A0A0F"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "backgroundColor": "#0A0A0F",
+      "navigationBarColor": "#0A0A0F"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-sqlite"
+    ]
+  }
+}

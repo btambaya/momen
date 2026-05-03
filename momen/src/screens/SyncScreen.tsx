@@ -51,21 +51,9 @@ export function SyncScreen() {
     }
   };
 
-  const handleClapSync = async () => {
-    const syncPerformanceTime = performance.now();
-    const syncDeviceTime = Date.now();
-
-    await updateSessionSync(
-      sessionId,
-      'clap',
-      0,
-      null,
-      syncPerformanceTime,
-      syncDeviceTime,
-      0
-    );
-
-    navigation.replace('Logging', { sessionId });
+  const handleClapSync = () => {
+    // Navigate to ClapListenScreen — sync happens when clap is detected
+    navigation.navigate('ClapListen', { sessionId, frameRate });
   };
 
   return (

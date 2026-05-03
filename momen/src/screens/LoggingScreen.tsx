@@ -17,6 +17,7 @@ import {
   Animated,
   BackHandler,
 } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { useNavigation, useRoute, RouteProp, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts, fontSize, spacing, radius } from '../theme';
@@ -65,6 +66,7 @@ export function LoggingScreen() {
 
   const listRef = useRef<FlatList>(null);
   const flashAnim = useRef(new Animated.Value(0)).current;
+  const lastMarkTimeRef = useRef(0); // double-tap guard
 
   useFocusEffect(
     useCallback(() => {
@@ -113,7 +115,12 @@ export function LoggingScreen() {
   const handleMark = useCallback(async () => {
     if (!session) return;
 
-    const tapPerformanceTime = performance.now();
+    // Double-tap guard — ignore taps within 150ms
+    const now = performance.now();
+    if (now - lastMarkTimeRef.current < 150) return;
+    lastMarkTimeRef.current = now;
+
+    const tapPerformanceTime = now;
 
     let timecodeMs: number;
     if (session.syncMethod === 'manual') {
@@ -172,6 +179,7 @@ export function LoggingScreen() {
 
   const handleConfirmDelete = async () => {
     if (!deleteMarkerId) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setShowDeleteModal(false);
     await deleteMarker(deleteMarkerId);
     const updated = await getMarkers(sessionId);
@@ -199,6 +207,7 @@ export function LoggingScreen() {
 
   const handleConfirmCut = async () => {
     setShowCutModal(false);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
     try {
       if (session) {
         const elapsed = performance.now() - syncPerformanceTime;

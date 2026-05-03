@@ -23,6 +23,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts, fontSize, spacing } from '../theme';
 import { RootStackParamList, SyncMethod } from '../types';
 import { updateSessionSync } from '../database/sessionRepository';
+import * as Haptics from 'expo-haptics';
 
 type NavProp = NativeStackNavigationProp<RootStackParamList, 'Roll'>;
 type RoutePropType = RouteProp<RootStackParamList, 'Roll'>;
@@ -72,6 +73,9 @@ export function RollScreen() {
   }, []);
 
   const handleRoll = async () => {
+    // Fire haptic immediately — this is the critical sync moment
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+
     const syncPerformanceTime = performance.now();
     const syncDeviceTime = Date.now();
 

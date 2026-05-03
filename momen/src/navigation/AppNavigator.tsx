@@ -13,6 +13,7 @@ import { SessionsListScreen } from '../screens/SessionsListScreen';
 import { CreateSessionScreen } from '../screens/CreateSessionScreen';
 import { SyncScreen } from '../screens/SyncScreen';
 import { RollScreen } from '../screens/RollScreen';
+import { ClapListenScreen } from '../screens/ClapListenScreen';
 import { LoggingScreen } from '../screens/LoggingScreen';
 import { colors } from '../theme';
 
@@ -51,6 +52,7 @@ export function AppNavigator() {
         <Stack.Screen name="CreateSession" component={CreateSessionScreen} />
         <Stack.Screen name="Sync" component={SyncScreen} />
         <Stack.Screen name="Roll" component={RollScreen} />
+        <Stack.Screen name="ClapListen" component={ClapListenScreen} />
         <Stack.Screen name="Logging" component={LoggingScreen} />
       </Stack.Navigator>
     </NavigationContainer>

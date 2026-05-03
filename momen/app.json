@@ -16,7 +16,10 @@
     "ios": {
       "supportsTablet": true,
       "backgroundColor": "#0A0A0F",
-      "bundleIdentifier": "com.ahmadtambaya.momen"
+      "bundleIdentifier": "com.ahmadtambaya.momen",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Momen uses the microphone to detect clap sounds for timecode sync."
+      }
     },
     "android": {
       "package": "com.ahmadtambaya.momen",
@@ -27,13 +30,20 @@
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "backgroundColor": "#0A0A0F",
-      "navigationBarColor": "#0A0A0F"
+      "navigationBarColor": "#0A0A0F",
+      "permissions": ["RECORD_AUDIO"]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-sqlite"
+      "expo-sqlite",
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Momen uses the microphone to detect clap sounds for timecode sync."
+        }
+      ]
     ]
   }
 }

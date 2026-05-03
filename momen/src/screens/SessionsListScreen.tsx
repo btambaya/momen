@@ -2,17 +2,21 @@
  * SessionsListScreen — Home screen showing all sessions
  *
  * Glassmorphism design with frosted glass cards, subtle gradients,
- * and micro-animations.
+ * micro-animations, and a search/filter bar.
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   View,
   Text,
+  TextInput,
   FlatList,
   TouchableOpacity,
   StyleSheet,
   StatusBar,
+  LayoutAnimation,
+  Platform,
+  UIManager,
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -22,12 +26,18 @@ import { GlassModal } from '../components/GlassModal';
 import { Session, RootStackParamList } from '../types';
 import { getAllSessions, deleteSession } from '../database/sessionRepository';
 
+// Enable LayoutAnimation on Android
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+
 type NavProp = NativeStackNavigationProp<RootStackParamList, 'SessionsList'>;
 
 export function SessionsListScreen() {
   const navigation = useNavigation<NavProp>();
   const [sessions, setSessions] = useState<Session[]>([]);
   const [deleteTarget, setDeleteTarget] = useState<Session | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useFocusEffect(
     useCallback(() => {
@@ -46,6 +56,24 @@ export function SessionsListScreen() {
     setSessions(data);
   };
 
+  // Filtered sessions based on search query
+  const filteredSessions = useMemo(() => {
+    if (!searchQuery.trim()) return sessions;
+    const q = searchQuery.toLowerCase().trim();
+    return sessions.filter((s) => {
+      const name = s.name.toLowerCase();
+      const date = formatDate(s.date || s.createdAt).toLowerCase();
+      const method = s.syncMethod.toLowerCase();
+      const fps = String(s.frameRate);
+      return (
+        name.includes(q) ||
+        date.includes(q) ||
+        method.includes(q) ||
+        fps.includes(q)
+      );
+    });
+  }, [sessions, searchQuery]);
+
   const handleDelete = (session: Session) => {
     setDeleteTarget(session);
   };
@@ -54,19 +82,11 @@ export function SessionsListScreen() {
     if (!deleteTarget) return;
     await deleteSession(deleteTarget.id);
     setDeleteTarget(null);
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     loadSessions();
   };
 
-  const formatDate = (isoDate: string) => {
-    const d = new Date(isoDate);
-    return d.toLocaleDateString('en-GB', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-    }).toUpperCase();
-  };
-
-  const renderSession = ({ item, index }: { item: Session; index: number }) => (
+  const renderSession = ({ item }: { item: Session }) => (
     <TouchableOpacity
       activeOpacity={0.7}
       onPress={() => navigation.navigate('Logging', { sessionId: item.id })}
@@ -88,6 +108,10 @@ export function SessionsListScreen() {
               <Text style={styles.markerCount}>
                 {item.markerCount || 0} marker{(item.markerCount || 0) !== 1 ? 's' : ''}
               </Text>
+            </View>
+
+            <View style={styles.fpsBadge}>
+              <Text style={styles.fpsText}>{item.frameRate} fps</Text>
             </View>
 
             <View
@@ -115,15 +139,28 @@ export function SessionsListScreen() {
 
   const renderEmpty = () => (
     <View style={styles.emptyState}>
-      <View style={styles.emptyIcon}>
-        <Text style={styles.emptyIconText}>◎</Text>
-      </View>
-      <Text style={styles.emptyTitle}>No sessions yet</Text>
-      <Text style={styles.emptySubtitle}>
-        Create your first session to start logging timecoded markers on set.
-      </Text>
+      {searchQuery.trim() ? (
+        <>
+          <Text style={styles.emptyTitle}>No results</Text>
+          <Text style={styles.emptySubtitle}>
+            No sessions match "{searchQuery}"
+          </Text>
+        </>
+      ) : (
+        <>
+          <View style={styles.emptyIcon}>
+            <Text style={styles.emptyIconText}>◎</Text>
+          </View>
+          <Text style={styles.emptyTitle}>No sessions yet</Text>
+          <Text style={styles.emptySubtitle}>
+            Create your first session to start logging timecoded markers on set.
+          </Text>
+        </>
+      )}
     </View>
   );
+
+  const showSearch = sessions.length > 0;
 
   return (
     <View style={styles.screen}>
@@ -138,17 +175,61 @@ export function SessionsListScreen() {
           <Text style={styles.logo}>MOMEN</Text>
           <Text style={styles.tagline}>Timecoded marker logging</Text>
         </View>
+        {sessions.length > 0 && (
+          <View style={styles.sessionCountBadge}>
+            <Text style={styles.sessionCountText}>{sessions.length}</Text>
+          </View>
+        )}
       </View>
 
-      <Text style={styles.sectionLabel}>YOUR SESSIONS</Text>
+      {/* Search bar */}
+      {showSearch && (
+        <View style={styles.searchWrapper}>
+          <View style={styles.searchBar}>
+            <Text style={styles.searchIcon}>⌕</Text>
+            <TextInput
+              style={styles.searchInput}
+              value={searchQuery}
+              onChangeText={(text) => {
+                LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+                setSearchQuery(text);
+              }}
+              placeholder="Search sessions..."
+              placeholderTextColor={colors.text.tertiary}
+              returnKeyType="search"
+              autoCorrect={false}
+              autoCapitalize="none"
+              clearButtonMode="while-editing"
+            />
+            {searchQuery.length > 0 && (
+              <TouchableOpacity
+                onPress={() => {
+                  LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+                  setSearchQuery('');
+                }}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
+                <Text style={styles.clearBtn}>✕</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+      )}
+
+      <Text style={styles.sectionLabel}>
+        {searchQuery.trim()
+          ? `${filteredSessions.length} RESULT${filteredSessions.length !== 1 ? 'S' : ''}`
+          : 'YOUR SESSIONS'}
+      </Text>
 
       <FlatList
-        data={sessions}
+        data={filteredSessions}
         renderItem={renderSession}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
         ListEmptyComponent={renderEmpty}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       />
 
       {/* New Session Button */}
@@ -189,6 +270,15 @@ export function SessionsListScreen() {
   );
 }
 
+function formatDate(isoDate: string): string {
+  const d = new Date(isoDate);
+  return d.toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }).toUpperCase();
+}
+
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
@@ -210,7 +300,7 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: spacing.xl,
     paddingTop: 60,
-    paddingBottom: spacing.lg,
+    paddingBottom: spacing.md,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
@@ -229,13 +319,62 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     marginTop: 4,
   },
+  sessionCountBadge: {
+    backgroundColor: colors.glass.bgActive,
+    borderWidth: 1,
+    borderColor: colors.glass.borderLight,
+    borderRadius: radius.round,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    marginTop: 4,
+  },
+  sessionCountText: {
+    fontFamily: fonts.mono,
+    fontSize: fontSize.sm,
+    color: colors.text.secondary,
+    fontWeight: '600',
+  },
+  searchWrapper: {
+    paddingHorizontal: spacing.xl,
+    marginTop: spacing.sm,
+  },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.glass.bg,
+    borderWidth: 1,
+    borderColor: colors.glass.border,
+    borderRadius: radius.lg,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: Platform.OS === 'ios' ? spacing.md : 0,
+    gap: spacing.sm,
+  },
+  searchIcon: {
+    fontFamily: fonts.mono,
+    fontSize: fontSize.lg,
+    color: colors.text.tertiary,
+  },
+  searchInput: {
+    flex: 1,
+    fontFamily: fonts.sans,
+    fontSize: fontSize.base,
+    color: colors.text.primary,
+    padding: 0,
+    margin: 0,
+  },
+  clearBtn: {
+    fontFamily: fonts.mono,
+    fontSize: fontSize.sm,
+    color: colors.text.tertiary,
+    padding: spacing.xs,
+  },
   sectionLabel: {
     fontFamily: fonts.mono,
     fontSize: fontSize.xs,
     color: colors.text.tertiary,
     letterSpacing: 2,
     paddingHorizontal: spacing.xl,
-    marginTop: spacing.xl,
+    marginTop: spacing.lg,
     marginBottom: spacing.md,
   },
   list: {
@@ -302,6 +441,20 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
     letterSpacing: 0.5,
   },
+  fpsBadge: {
+    backgroundColor: colors.glass.bg,
+    borderWidth: 1,
+    borderColor: colors.glass.border,
+    borderRadius: radius.round,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+  },
+  fpsText: {
+    fontFamily: fonts.mono,
+    fontSize: fontSize.xs,
+    color: colors.text.secondary,
+    letterSpacing: 0.5,
+  },
   syncBadge: {
     borderRadius: radius.round,
     paddingHorizontal: spacing.md,
@@ -324,7 +477,7 @@ const styles = StyleSheet.create({
   },
   emptyState: {
     alignItems: 'center',
-    paddingTop: 80,
+    paddingTop: 60,
     paddingHorizontal: spacing['3xl'],
   },
   emptyIcon: {

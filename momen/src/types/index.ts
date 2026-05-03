@@ -56,5 +56,9 @@ export type RootStackParamList = {
     cameraTc?: string;
     cameraTcMs?: number;
   };
+  ClapListen: {
+    sessionId: string;
+    frameRate: FrameRate;
+  };
   Logging: { sessionId: string };
 };

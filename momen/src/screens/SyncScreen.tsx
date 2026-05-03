@@ -23,7 +23,6 @@ import { GlassCard } from '../components/GlassCard';
 import { TimecodeInput } from '../components/TimecodeInput';
 import { RootStackParamList, SyncMethod } from '../types';
 import { smpteToMs } from '../engine/timecode';
-import { updateSessionSync } from '../database/sessionRepository';
 
 type NavProp = NativeStackNavigationProp<RootStackParamList, 'Sync'>;
 type RoutePropType = RouteProp<RootStackParamList, 'Sync'>;
@@ -39,23 +38,16 @@ export function SyncScreen() {
   const handleManualSync = async () => {
     try {
       const cameraTcMs = smpteToMs(cameraTc, frameRate);
-      const syncPerformanceTime = performance.now();
-      const syncDeviceTime = Date.now();
-      const offsetMs = cameraTcMs - syncDeviceTime;
-
-      await updateSessionSync(
+      // Navigate to RollScreen — syncPerformanceTime is captured on ROLL tap
+      navigation.navigate('Roll', {
         sessionId,
-        'manual',
-        offsetMs,
+        frameRate,
+        syncMethod: 'manual',
         cameraTc,
-        syncPerformanceTime,
-        syncDeviceTime,
-        cameraTcMs
-      );
-
-      navigation.replace('Logging', { sessionId });
+        cameraTcMs,
+      });
     } catch (error: any) {
-      Alert.alert('Sync Error', error.message || 'Failed to sync.');
+      Alert.alert('Sync Error', error.message || 'Failed to parse timecode.');
     }
   };
 
@@ -151,13 +143,6 @@ export function SyncScreen() {
                       fps={frameRate}
                       onTimecodeChange={setCameraTc}
                     />
-                  </View>
-
-                  <View style={styles.formulaBox}>
-                    <Text style={styles.formulaLabel}>OFFSET FORMULA</Text>
-                    <Text style={styles.formulaText}>
-                      Marker TC = <Text style={styles.formulaHighlight}>T_tap</Text> + <Text style={styles.formulaHighlight}>Offset</Text>
-                    </Text>
                   </View>
 
                   <TouchableOpacity
@@ -400,30 +385,6 @@ const styles = StyleSheet.create({
   },
   tcInputWrapper: {
     marginVertical: spacing.xl,
-  },
-  formulaBox: {
-    backgroundColor: colors.glass.bg,
-    borderWidth: 1,
-    borderColor: colors.glass.border,
-    borderRadius: radius.md,
-    padding: spacing.lg,
-    marginBottom: spacing.xl,
-  },
-  formulaLabel: {
-    fontFamily: fonts.mono,
-    fontSize: 9,
-    color: colors.text.tertiary,
-    letterSpacing: 2,
-    marginBottom: spacing.sm,
-  },
-  formulaText: {
-    fontFamily: fonts.mono,
-    fontSize: fontSize.md,
-    color: colors.text.primary,
-  },
-  formulaHighlight: {
-    color: colors.coral.text,
-    fontWeight: '600',
   },
   syncBtn: {
     backgroundColor: colors.coral.main,

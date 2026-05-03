@@ -2,11 +2,11 @@
  * LoggingScreen — Main marker logging interface
  *
  * The primary screen where users spend most of their time.
- * Features: running timecode, mark button, marker list, export,
- * re-sync, end session with glassmorphism modals.
+ * Features: running timecode, mark button, CUT button, marker list, export,
+ * end session with glassmorphism modals.
  */
 
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -15,6 +15,7 @@ import {
   StyleSheet,
   StatusBar,
   Animated,
+  BackHandler,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -27,7 +28,7 @@ import { RootStackParamList, Session, Marker } from '../types';
 import { getSession, getSessionSyncData, endSession } from '../database/sessionRepository';
 import { addMarker, getMarkers, updateMarkerNote, deleteMarker } from '../database/markerRepository';
 import { msToSmpte } from '../engine/timecode';
-import { exportAndShare } from '../export/exportManager';
+import { generateExportFiles, shareFile } from '../export/exportManager';
 
 const SYNC_NOTE = 'Align this marker to the frame of the clap in your footage to synchronise all subsequent markers.';
 
@@ -48,10 +49,19 @@ export function LoggingScreen() {
   const [frozenTimecode, setFrozenTimecode] = useState<string | null>(null);
 
   // Modal state
-  const [showEndModal, setShowEndModal] = useState(false);
+  const [showCutModal, setShowCutModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteMarkerId, setDeleteMarkerId] = useState<string | null>(null);
-  const [showExportModal, setShowExportModal] = useState(false);
+  const [showNoMarkersModal, setShowNoMarkersModal] = useState(false);
+
+  // Share modal state
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [exportPaths, setExportPaths] = useState<{
+    csvPath: string;
+    fcpxmlPath: string;
+    edlPath: string;
+  } | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   const listRef = useRef<FlatList>(null);
   const flashAnim = useRef(new Animated.Value(0)).current;
@@ -60,6 +70,21 @@ export function LoggingScreen() {
     useCallback(() => {
       loadSession();
     }, [sessionId])
+  );
+
+  // Block Android hardware back button when session is active
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        // If session is active (not ended), eat the back press
+        if (session && !session.isEnded) {
+          return true; // handled — do nothing
+        }
+        return false; // let default navigation happen
+      };
+      const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      return () => sub.remove();
+    }, [session])
   );
 
   const loadSession = async () => {
@@ -140,7 +165,6 @@ export function LoggingScreen() {
     );
   };
 
-  // Show delete confirmation modal
   const handleRequestDelete = (markerId: string) => {
     setDeleteMarkerId(markerId);
     setShowDeleteModal(true);
@@ -158,22 +182,23 @@ export function LoggingScreen() {
   const handleExport = async () => {
     if (!session) return;
     if (markers.length === 0) {
-      setShowExportModal(true);
+      setShowNoMarkersModal(true);
       return;
     }
-    await exportAndShare(session, markers);
+    try {
+      setIsExporting(true);
+      const result = await generateExportFiles(session, markers);
+      setExportPaths(result);
+      setShowShareModal(true);
+    } catch (e: any) {
+      console.error('Export error', e);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
-  const handleResync = () => {
-    if (!session) return;
-    navigation.navigate('Sync', {
-      sessionId: session.id,
-      frameRate: session.frameRate,
-    });
-  };
-
-  const handleConfirmEnd = async () => {
-    setShowEndModal(false);
+  const handleConfirmCut = async () => {
+    setShowCutModal(false);
     try {
       if (session) {
         const elapsed = performance.now() - syncPerformanceTime;
@@ -195,7 +220,6 @@ export function LoggingScreen() {
     }
   };
 
-  // Format offset for display
   const getOffsetDisplay = (): string => {
     if (!session || session.syncMethod !== 'manual') return '';
     if (session.offsetMs === undefined || session.offsetMs === null) return '';
@@ -221,6 +245,8 @@ export function LoggingScreen() {
     );
   }
 
+  const isActive = !session.isEnded;
+
   return (
     <View style={styles.screen}>
       <StatusBar barStyle="light-content" />
@@ -238,14 +264,18 @@ export function LoggingScreen() {
       <View style={styles.bgGlowCoral} />
       <View style={styles.bgGlowTeal} />
 
-      {/* Header */}
+      {/* Header — back only visible when session is ended */}
       <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backBtn}
-        >
-          <Text style={styles.backText}>‹</Text>
-        </TouchableOpacity>
+        {session.isEnded ? (
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backBtn}
+          >
+            <Text style={styles.backText}>‹</Text>
+          </TouchableOpacity>
+        ) : (
+          <View style={styles.backBtnPlaceholder} />
+        )}
 
         <View style={styles.headerCenter}>
           <Text style={styles.sessionName} numberOfLines={1}>
@@ -253,23 +283,13 @@ export function LoggingScreen() {
           </Text>
         </View>
 
-        {/* Header actions: Re-sync + End (or Ended label) */}
-        <View style={styles.headerActions}>
-          {!session.isEnded && (
-            <TouchableOpacity onPress={handleResync} style={styles.resyncBtn}>
-              <Text style={styles.resyncText}>↻</Text>
-            </TouchableOpacity>
-          )}
-          {session.isEnded ? (
-            <View style={[styles.endBtn, styles.endedLabel]}>
-              <Text style={[styles.endText, { color: colors.text.tertiary }]}>Ended</Text>
-            </View>
-          ) : (
-            <TouchableOpacity onPress={() => setShowEndModal(true)} style={styles.endBtn}>
-              <Text style={styles.endText}>End</Text>
-            </TouchableOpacity>
-          )}
-        </View>
+        {/* Ended label on the right when done */}
+        {session.isEnded && (
+          <View style={styles.endedLabel}>
+            <Text style={styles.endedLabelText}>Ended</Text>
+          </View>
+        )}
+        {!session.isEnded && <View style={styles.backBtnPlaceholder} />}
       </View>
 
       {/* Timecode Display */}
@@ -282,7 +302,7 @@ export function LoggingScreen() {
         frozenTimecode={frozenTimecode}
       />
 
-      {/* Sync info bar — expanded with offset, sync time, or clap reminder */}
+      {/* Sync info bar */}
       <View style={styles.syncInfoBar}>
         <View style={styles.syncInfoItem}>
           <Text style={styles.syncInfoLabel}>METHOD</Text>
@@ -350,14 +370,15 @@ export function LoggingScreen() {
         )}
       </View>
 
-      {/* Bottom bar with Mark button and Export */}
+      {/* Bottom bar: [Export] [MARK] [CUT] */}
       <View style={styles.bottomBar}>
         <TouchableOpacity
-          style={styles.exportBtn}
+          style={[styles.sideBtn, isExporting && styles.sideBtnDisabled]}
           onPress={handleExport}
           activeOpacity={0.7}
+          disabled={isExporting}
         >
-          <Text style={styles.exportText}>Export</Text>
+          <Text style={styles.sideBtnText}>{isExporting ? '…' : 'Export'}</Text>
         </TouchableOpacity>
 
         <MarkButton
@@ -366,28 +387,40 @@ export function LoggingScreen() {
           markerCount={markers.length}
         />
 
-        <View style={styles.exportPlaceholder} />
+        {isActive ? (
+          <TouchableOpacity
+            style={[styles.sideBtn, styles.cutBtn]}
+            onPress={() => setShowCutModal(true)}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.sideBtnText, styles.cutText]}>CUT</Text>
+          </TouchableOpacity>
+        ) : (
+          <View style={[styles.sideBtn, styles.sideBtnDisabled]}>
+            <Text style={[styles.sideBtnText, { color: colors.text.tertiary }]}>CUT</Text>
+          </View>
+        )}
       </View>
 
       {/* ── Glassmorphism Modals ── */}
 
-      {/* End Session Modal */}
+      {/* CUT Session Modal */}
       <GlassModal
-        visible={showEndModal}
-        title="End Session"
-        message={`End "${session.name}" and return to the sessions list? The timecode counter will stop and the session will be marked as complete.`}
+        visible={showCutModal}
+        title="Cut Session"
+        message={`Cut "${session.name}" and return to the sessions list? The timecode counter will stop and the session will be marked as complete.`}
         accent="coral"
-        onClose={() => setShowEndModal(false)}
+        onClose={() => setShowCutModal(false)}
         actions={[
           {
-            text: 'End Session',
+            text: 'Cut',
             style: 'destructive',
-            onPress: handleConfirmEnd,
+            onPress: handleConfirmCut,
           },
           {
             text: 'Cancel',
             style: 'cancel',
-            onPress: () => setShowEndModal(false),
+            onPress: () => setShowCutModal(false),
           },
         ]}
       />
@@ -413,17 +446,54 @@ export function LoggingScreen() {
         ]}
       />
 
-      {/* No Markers Export Modal */}
+      {/* No Markers Modal */}
       <GlassModal
-        visible={showExportModal}
+        visible={showNoMarkersModal}
         title="No Markers"
         message="Log some markers before exporting."
         accent="amber"
-        onClose={() => setShowExportModal(false)}
+        onClose={() => setShowNoMarkersModal(false)}
         actions={[
           {
             text: 'OK',
-            onPress: () => setShowExportModal(false),
+            onPress: () => setShowNoMarkersModal(false),
+          },
+        ]}
+      />
+
+      {/* Share / Export Format Modal */}
+      <GlassModal
+        visible={showShareModal}
+        title="Share Export"
+        message="Choose a format to share with your editor."
+        accent="coral"
+        onClose={() => setShowShareModal(false)}
+        actions={[
+          {
+            text: 'CSV  —  Universal',
+            onPress: () => {
+              setShowShareModal(false);
+              if (exportPaths) shareFile(exportPaths.csvPath, 'text/csv');
+            },
+          },
+          {
+            text: 'FCPXML  —  Final Cut Pro',
+            onPress: () => {
+              setShowShareModal(false);
+              if (exportPaths) shareFile(exportPaths.fcpxmlPath, 'application/xml');
+            },
+          },
+          {
+            text: 'EDL  —  Premiere / Resolve',
+            onPress: () => {
+              setShowShareModal(false);
+              if (exportPaths) shareFile(exportPaths.edlPath, 'text/plain');
+            },
+          },
+          {
+            text: 'Cancel',
+            style: 'cancel',
+            onPress: () => setShowShareModal(false),
           },
         ]}
       />
@@ -487,6 +557,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  backBtnPlaceholder: {
+    width: 36,
+    height: 36,
+  },
   backText: {
     fontFamily: fonts.mono,
     fontSize: 24,
@@ -504,44 +578,15 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: colors.text.primary,
   },
-  headerActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  resyncBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: colors.glass.bg,
-    borderWidth: 1,
-    borderColor: colors.glass.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  resyncText: {
-    fontFamily: fonts.mono,
-    fontSize: 18,
-    color: colors.text.secondary,
-  },
-  endBtn: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: radius.round,
-    backgroundColor: colors.glass.bg,
-    borderWidth: 1,
-    borderColor: colors.glass.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   endedLabel: {
-    opacity: 0.5,
+    width: 36,
+    alignItems: 'flex-end',
   },
-  endText: {
+  endedLabelText: {
     fontFamily: fonts.mono,
-    fontSize: fontSize.sm,
-    color: colors.coral.text,
-    fontWeight: '500',
+    fontSize: fontSize.xs,
+    color: colors.text.tertiary,
+    letterSpacing: 0.5,
   },
   syncInfoBar: {
     flexDirection: 'row',
@@ -627,7 +672,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: colors.glass.border,
   },
-  exportBtn: {
+  sideBtn: {
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.md,
     borderRadius: radius.round,
@@ -637,13 +682,21 @@ const styles = StyleSheet.create({
     minWidth: 80,
     alignItems: 'center',
   },
-  exportText: {
+  sideBtnDisabled: {
+    opacity: 0.4,
+  },
+  sideBtnText: {
     fontFamily: fonts.mono,
     fontSize: fontSize.sm,
     color: colors.text.secondary,
     letterSpacing: 0.5,
   },
-  exportPlaceholder: {
-    minWidth: 80,
+  cutBtn: {
+    borderColor: colors.coral.border,
+    backgroundColor: colors.coral.light,
+  },
+  cutText: {
+    color: colors.coral.text,
+    fontWeight: '600',
   },
 });

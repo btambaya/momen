@@ -12,6 +12,7 @@ import { RootStackParamList } from '../types';
 import { SessionsListScreen } from '../screens/SessionsListScreen';
 import { CreateSessionScreen } from '../screens/CreateSessionScreen';
 import { SyncScreen } from '../screens/SyncScreen';
+import { RollScreen } from '../screens/RollScreen';
 import { LoggingScreen } from '../screens/LoggingScreen';
 import { colors } from '../theme';
 
@@ -49,6 +50,7 @@ export function AppNavigator() {
         <Stack.Screen name="SessionsList" component={SessionsListScreen} />
         <Stack.Screen name="CreateSession" component={CreateSessionScreen} />
         <Stack.Screen name="Sync" component={SyncScreen} />
+        <Stack.Screen name="Roll" component={RollScreen} />
         <Stack.Screen name="Logging" component={LoggingScreen} />
       </Stack.Navigator>
     </NavigationContainer>

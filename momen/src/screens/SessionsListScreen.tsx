@@ -37,6 +37,12 @@ export function SessionsListScreen() {
 
   const loadSessions = async () => {
     const data = await getAllSessions();
+    // If there is an active (non-ended) session, go straight to it
+    const active = data.find((s) => !s.isEnded);
+    if (active) {
+      navigation.replace('Logging', { sessionId: active.id });
+      return;
+    }
     setSessions(data);
   };
 

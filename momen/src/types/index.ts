@@ -49,5 +49,12 @@ export type RootStackParamList = {
   SessionsList: undefined;
   CreateSession: undefined;
   Sync: { sessionId: string; frameRate: FrameRate };
+  Roll: {
+    sessionId: string;
+    frameRate: FrameRate;
+    syncMethod: SyncMethod;
+    cameraTc?: string;
+    cameraTcMs?: number;
+  };
   Logging: { sessionId: string };
 };

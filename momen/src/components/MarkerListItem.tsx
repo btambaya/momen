@@ -91,10 +91,14 @@ export function MarkerListItem({
           </View>
         )}
 
-        {/* Tap to add note (if no note and not editing) */}
+        {/* Add note pill (if no note and not editing) */}
         {!marker.note && !isEditing && !marker.isSyncPoint && (
-          <TouchableOpacity onPress={() => setIsEditing(true)}>
-            <Text style={styles.addNote}>+ add note</Text>
+          <TouchableOpacity
+            onPress={() => setIsEditing(true)}
+            style={styles.addNotePill}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <Text style={styles.addNoteText}>+ Add Note</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -197,10 +201,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
   },
-  addNote: {
+  addNotePill: {
+    alignSelf: 'flex-start',
+    marginTop: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: radius.round,
+    backgroundColor: colors.glass.bgActive,
+    borderWidth: 1,
+    borderColor: colors.glass.borderLight,
+  },
+  addNoteText: {
     fontFamily: fonts.mono,
-    fontSize: fontSize.xs,
-    color: colors.text.tertiary,
-    marginTop: spacing.xs,
+    fontSize: fontSize.sm,
+    color: colors.text.secondary,
+    letterSpacing: 0.3,
   },
 });

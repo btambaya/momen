@@ -2,19 +2,16 @@
  * Momen — Export Manager
  *
  * Generates all three export formats simultaneously and presents
- * the iOS share sheet.
+ * the share sheet via a custom GlassModal (called from LoggingScreen).
  */
 
 import { File, Paths, Directory } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { Alert } from 'react-native';
-import { Session, Marker } from '../types';
+import { Session, Marker, FrameRate } from '../types';
 import { generateCSV } from './csvExporter';
 import { generateFCPXML } from './fcpxmlExporter';
 import { generateEDL } from './edlExporter';
-
-const CLAP_SYNC_MESSAGE =
-  'Your export includes a SYNC marker. Share these files with your editor and ask them to align the SYNC marker to the frame of the clap in your footage. This will automatically align all subsequent markers to the correct position on the timeline.';
 
 export interface ExportResult {
   csvPath: string;
@@ -23,7 +20,16 @@ export interface ExportResult {
 }
 
 /**
+ * Convert a FrameRate to a filename-safe string.
+ * 23.976 → "23976fps", 29.97 → "2997fps", 24 → "24fps" etc.
+ */
+export function fpsToFilenamePart(fps: FrameRate): string {
+  return `${String(fps).replace('.', '')}fps`;
+}
+
+/**
  * Generate all export files and return their paths.
+ * Filename: {SessionName}_{YYYYMMDD}_{fps}fps_markers.{ext}
  */
 export async function generateExportFiles(
   session: Session,
@@ -31,7 +37,8 @@ export async function generateExportFiles(
 ): Promise<ExportResult> {
   const dateStr = formatDate(session.date || session.createdAt);
   const safeName = session.name.replace(/[^a-zA-Z0-9_-]/g, '_');
-  const baseName = `${safeName}_${dateStr}_markers`;
+  const fpsPart = fpsToFilenamePart(session.frameRate);
+  const baseName = `${safeName}_${dateStr}_${fpsPart}_markers`;
 
   // Ensure export directory exists
   const exportDir = new Directory(Paths.cache, 'momen_exports');
@@ -44,7 +51,7 @@ export async function generateExportFiles(
   const fcpxmlContent = generateFCPXML(session, markers);
   const edlContent = generateEDL(session, markers);
 
-  // Write files using the new File API
+  // Write files
   const csvFile = new File(exportDir, `${baseName}.csv`);
   const fcpxmlFile = new File(exportDir, `${baseName}.fcpxml`);
   const edlFile = new File(exportDir, `${baseName}.edl`);
@@ -61,93 +68,26 @@ export async function generateExportFiles(
 }
 
 /**
- * Export and share files. For clap sync sessions, shows
- * the confirmation message first.
+ * Share a single file via the native share sheet.
+ * Called from LoggingScreen after the user selects a format in the GlassModal.
  */
-export async function exportAndShare(
-  session: Session,
-  markers: Marker[]
-): Promise<void> {
-  if (markers.length === 0) {
-    Alert.alert('No Markers', 'Log some markers before exporting.');
-    return;
-  }
-
+export async function shareFile(uri: string, mimeType: string): Promise<void> {
   try {
-    const result = await generateExportFiles(session, markers);
-
-    // For clap sync, show confirmation screen first
-    if (session.syncMethod === 'clap') {
-      return new Promise<void>((resolve) => {
-        Alert.alert(
-          'Clap Sync Export',
-          CLAP_SYNC_MESSAGE,
-          [
-            {
-              text: 'Share Files',
-              onPress: async () => {
-                await shareFiles(result);
-                resolve();
-              },
-            },
-            {
-              text: 'Cancel',
-              style: 'cancel',
-              onPress: () => resolve(),
-            },
-          ]
-        );
-      });
-    } else {
-      await shareFiles(result);
+    const isAvailable = await Sharing.isAvailableAsync();
+    if (!isAvailable) {
+      Alert.alert(
+        'Sharing Unavailable',
+        'Sharing is not available on this device. Files have been saved to the app cache.'
+      );
+      return;
     }
+    await Sharing.shareAsync(uri, { mimeType });
   } catch (error: any) {
-    Alert.alert('Export Error', error.message || 'Failed to generate export files.');
+    Alert.alert('Share Error', error.message || 'Failed to share file.');
   }
 }
 
-/**
- * Share export files via the iOS share sheet.
- */
-async function shareFiles(result: ExportResult): Promise<void> {
-  const isAvailable = await Sharing.isAvailableAsync();
-
-  if (!isAvailable) {
-    Alert.alert(
-      'Sharing Unavailable',
-      'Sharing is not available on this device. Files have been saved to the app cache.'
-    );
-    return;
-  }
-
-  // Share files sequentially — user picks format
-  Alert.alert(
-    'Share Export',
-    'Choose a format to share:',
-    [
-      {
-        text: 'CSV (Universal)',
-        onPress: () => Sharing.shareAsync(result.csvPath, { mimeType: 'text/csv' }),
-      },
-      {
-        text: 'FCPXML (Final Cut Pro)',
-        onPress: () => Sharing.shareAsync(result.fcpxmlPath, { mimeType: 'application/xml' }),
-      },
-      {
-        text: 'EDL (Premiere/Resolve)',
-        onPress: () => Sharing.shareAsync(result.edlPath, { mimeType: 'text/plain' }),
-      },
-      {
-        text: 'Share All',
-        onPress: async () => {
-          await Sharing.shareAsync(result.csvPath, { mimeType: 'text/csv' });
-          await Sharing.shareAsync(result.fcpxmlPath, { mimeType: 'application/xml' });
-          await Sharing.shareAsync(result.edlPath, { mimeType: 'text/plain' });
-        },
-      },
-    ]
-  );
-}
+// ─── Helpers ─────────────────────────────────────────────────
 
 function formatDate(isoDate: string): string {
   const d = new Date(isoDate);

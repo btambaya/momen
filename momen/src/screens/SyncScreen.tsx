@@ -18,6 +18,7 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts, fontSize, spacing, radius, shadows } from '../theme';
 import { GlassCard } from '../components/GlassCard';
 import { TimecodeInput } from '../components/TimecodeInput';
@@ -30,6 +31,7 @@ type RoutePropType = RouteProp<RootStackParamList, 'Sync'>;
 export function SyncScreen() {
   const navigation = useNavigation<NavProp>();
   const route = useRoute<RoutePropType>();
+  const insets = useSafeAreaInsets();
   const { sessionId, frameRate } = route.params;
 
   const [selectedMethod, setSelectedMethod] = useState<SyncMethod | null>(null);
@@ -67,7 +69,7 @@ export function SyncScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <View style={styles.header}>
+        <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
             style={styles.backBtn}

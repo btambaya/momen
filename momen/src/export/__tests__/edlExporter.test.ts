@@ -90,9 +90,9 @@ describe('generateEDL', () => {
     expect(edl).toContain('synchronise all subsequent markers');
   });
 
-  test('regular marker COMMENT contains the note', () => {
-    const edl = generateEDL(makeSession(), [makeMarker({ note: 'Camera A wide' })]);
-    expect(edl).toContain('* COMMENT: Camera A wide');
+  test('regular marker contains the note using LOC syntax', () => {
+    const edl = generateEDL(makeSession(), [makeMarker({ note: 'Camera A wide', timecodeSmpte: '00:00:05:00' })]);
+    expect(edl).toContain('* LOC: 00:00:05:00 BLUE     Camera A wide');
   });
 
   test('timecode uses colons for non-drop fps (24)', () => {

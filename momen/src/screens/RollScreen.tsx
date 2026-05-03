@@ -20,6 +20,7 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts, fontSize, spacing } from '../theme';
 import { RootStackParamList, SyncMethod } from '../types';
 import { updateSessionSync } from '../database/sessionRepository';
@@ -31,6 +32,7 @@ type RoutePropType = RouteProp<RootStackParamList, 'Roll'>;
 export function RollScreen() {
   const navigation = useNavigation<NavProp>();
   const route = useRoute<RoutePropType>();
+  const insets = useSafeAreaInsets();
   const { sessionId, frameRate, syncMethod, cameraTc, cameraTcMs = 0 } = route.params;
 
   // Pulsing ring animation
@@ -117,7 +119,7 @@ export function RollScreen() {
       {/* Back button */}
       <TouchableOpacity
         onPress={() => navigation.goBack()}
-        style={styles.backBtn}
+        style={[styles.backBtn, { top: insets.top + 8 }]}
       >
         <Text style={styles.backText}>‹</Text>
       </TouchableOpacity>
@@ -145,6 +147,7 @@ export function RollScreen() {
             onPress={handleRoll}
             style={styles.rollButton}
             activeOpacity={0.75}
+            accessibilityLabel="Roll — start sync"
           >
             <Text style={styles.rollText}>ROLL</Text>
           </TouchableOpacity>

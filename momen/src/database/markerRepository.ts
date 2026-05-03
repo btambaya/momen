@@ -17,18 +17,22 @@ export async function addMarker(
   const id = generateId();
   const createdAt = new Date().toISOString();
 
-  // Get next marker number
-  const countRow = await db.getFirstAsync<{ count: number }>(
-    'SELECT COUNT(*) as count FROM markers WHERE session_id = ?',
-    [sessionId]
-  );
-  const markerNumber = (countRow?.count || 0) + 1;
+  let markerNumber = 1;
 
-  await db.runAsync(
-    `INSERT INTO markers (id, session_id, marker_number, timecode_ms, timecode_smpte, note, is_sync_point, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-    [id, sessionId, markerNumber, timecodeMs, timecodeSmpte, note, isSyncPoint ? 1 : 0, createdAt]
-  );
+  // Atomic count + insert to prevent duplicate marker numbers
+  await db.withTransactionAsync(async () => {
+    const countRow = await db.getFirstAsync<{ count: number }>(
+      'SELECT COUNT(*) as count FROM markers WHERE session_id = ?',
+      [sessionId]
+    );
+    markerNumber = (countRow?.count || 0) + 1;
+
+    await db.runAsync(
+      `INSERT INTO markers (id, session_id, marker_number, timecode_ms, timecode_smpte, note, is_sync_point, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [id, sessionId, markerNumber, timecodeMs, timecodeSmpte, note, isSyncPoint ? 1 : 0, createdAt]
+    );
+  });
 
   return {
     id,

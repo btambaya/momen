@@ -19,6 +19,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts, fontSize, spacing, radius, shadows } from '../theme';
 import { GlassCard } from '../components/GlassCard';
 import { FrameRatePicker } from '../components/FrameRatePicker';
@@ -29,6 +30,7 @@ type NavProp = NativeStackNavigationProp<RootStackParamList, 'CreateSession'>;
 
 export function CreateSessionScreen() {
   const navigation = useNavigation<NavProp>();
+  const insets = useSafeAreaInsets();
   const [name, setName] = useState('');
   const [frameRate, setFrameRate] = useState<FrameRate>(24);
   const today = new Date().toISOString().split('T')[0];
@@ -59,8 +61,7 @@ export function CreateSessionScreen() {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          {/* Header */}
-          <View style={styles.header}>
+          <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
             <TouchableOpacity
               onPress={() => navigation.goBack()}
               style={styles.backBtn}
@@ -86,6 +87,8 @@ export function CreateSessionScreen() {
               placeholderTextColor={colors.text.tertiary}
               autoFocus
               returnKeyType="next"
+              maxLength={50}
+              accessibilityLabel="Session name"
             />
           </GlassCard>
 

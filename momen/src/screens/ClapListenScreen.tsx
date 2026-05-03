@@ -21,15 +21,14 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Audio } from 'expo-av';
 import * as Haptics from 'expo-haptics';
 import { colors, fonts, fontSize, spacing, radius } from '../theme';
 import { RootStackParamList } from '../types';
 import { updateSessionSync } from '../database/sessionRepository';
 import { addMarker } from '../database/markerRepository';
-
-const SYNC_NOTE =
-  'Align this marker to the frame of the clap in your footage to synchronise all subsequent markers.';
+import { SYNC_NOTE } from '../constants';
 
 type NavProp = NativeStackNavigationProp<RootStackParamList, 'ClapListen'>;
 type RoutePropType = RouteProp<RootStackParamList, 'ClapListen'>;
@@ -37,16 +36,17 @@ type RoutePropType = RouteProp<RootStackParamList, 'ClapListen'>;
 // ─── Detection tuning ────────────────────────────────────────
 const POLL_INTERVAL_MS = 50;
 const HISTORY_SIZE = 10; // ~500ms of history at 50ms
-const SPIKE_THRESHOLD_DB = 40; // dB above noise floor — very aggressive
-const ABSOLUTE_MIN_DB = -8; // must be near-clipping (claps hit -5 to 0 dBFS close to mic)
+const SPIKE_THRESHOLD_DB = 100; // dB above noise floor — very aggressive
+const ABSOLUTE_MIN_DB = -2; // must be near-clipping (claps hit -5 to 0 dBFS close to mic)
 const COOLDOWN_MS = 1500; // ignore sounds after detection
 const AUTO_NAV_DELAY_MS = 700; // pause before navigating
 const DECAY_CHECK_COUNT = 2; // wait 2 polls (100ms) to confirm decay
-const DECAY_DROP_DB = 15; // level must drop 15+ dB after spike (claps decay fast)
+const DECAY_DROP_DB = 30; // level must drop 30+ dB after spike (claps decay fast)
 
 export function ClapListenScreen() {
   const navigation = useNavigation<NavProp>();
   const route = useRoute<RoutePropType>();
+  const insets = useSafeAreaInsets();
   const { sessionId, frameRate } = route.params;
 
   const [permissionGranted, setPermissionGranted] = useState<boolean | null>(null);
@@ -353,7 +353,12 @@ export function ClapListenScreen() {
       <View style={styles.screen}>
         <StatusBar barStyle="light-content" />
         <View style={styles.bgGlowCoral} />
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+        <TouchableOpacity
+          style={[styles.backBtn, { top: insets.top + 8 }]}
+          onPress={() => navigation.goBack()}
+          activeOpacity={0.7}
+          accessibilityLabel="Go back"
+        >
           <Text style={styles.backText}>‹</Text>
         </TouchableOpacity>
         <View style={styles.centreContent}>
@@ -365,6 +370,7 @@ export function ClapListenScreen() {
             style={styles.manualBtn}
             onPress={() => navigation.goBack()}
             activeOpacity={0.7}
+            accessibilityLabel="Go back"
           >
             <Text style={styles.manualBtnText}>Go Back</Text>
           </TouchableOpacity>
@@ -491,6 +497,7 @@ export function ClapListenScreen() {
             style={styles.manualBtn}
             onPress={handleManualSync}
             activeOpacity={0.7}
+            accessibilityLabel="Sync manually"
           >
             <Text style={styles.manualBtnText}>Tap to sync manually</Text>
           </TouchableOpacity>

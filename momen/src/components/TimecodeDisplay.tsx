@@ -30,12 +30,17 @@ export function TimecodeDisplay({
 }: TimecodeDisplayProps) {
   const [timecode, setTimecode] = useState(frozenTimecode || '00:00:00:00');
   const rafRef = useRef<number | null>(null);
+  const lastTcRef = useRef(timecode); // avoid redundant re-renders
 
   const updateTimecode = useCallback(() => {
     if (!isRunning) return;
 
     const tc = getCurrentTimecode(syncPerformanceTime, cameraTcMs, fps, syncMethod);
-    setTimecode(tc);
+    // Only re-render if the displayed value actually changed
+    if (tc !== lastTcRef.current) {
+      lastTcRef.current = tc;
+      setTimecode(tc);
+    }
 
     rafRef.current = requestAnimationFrame(updateTimecode);
   }, [syncPerformanceTime, cameraTcMs, fps, syncMethod, isRunning]);

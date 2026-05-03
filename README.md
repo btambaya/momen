@@ -31,16 +31,7 @@ Built for maximum cross-platform efficiency and aesthetic quality:
 - **Styling:** Custom Glassmorphism System
 - **Haptics:** `expo-haptics` integration
 
-## 📱 Installation (Android)
-
-A fully compiled, release-ready APK is available in this repository under the `apps/` directory.
-
-1. Download [`apps/Momen_App.apk`](./apps/Momen_App.apk) to your Android device.
-2. Open the file and follow the system prompts to install. *(You may need to allow installations from unknown sources in your Android settings).*
-
-## 💻 Local Development
-
-Before running the project locally, ensure you have Node.js and the Expo CLI installed.
+## 📱 Local Development
 
 ```bash
 # 1. Clone the repository
@@ -53,7 +44,51 @@ npm install
 # 3. Start the Expo development server
 npx expo start
 ```
-From the Expo menu, you can open the app on an iOS Simulator, Android Emulator, or directly on your physical device using the Expo Go app.
+Scan the QR code with Expo Go (Android) or the Camera app (iOS) to run on your device.
+
+## 🔨 Building for Android (APK)
+
+```bash
+# 1. Generate native Android project
+npx expo prebuild --platform android
+
+# 2. Build the APK with Gradle
+cd android && ./gradlew assembleRelease
+```
+
+The APK will be at:
+```
+android/app/build/outputs/apk/release/app-release.apk
+```
+
+> **Requires:** Java 17 (`java -version` to check). Transfer the APK to your device via AirDrop, email, or USB.
+
+## 🍎 Building for iOS (Xcode / TestFlight)
+
+```bash
+# 1. Generate native iOS project
+npx expo prebuild --platform ios
+
+# 2. Install CocoaPods dependencies
+cd ios && pod install
+
+# 3. Open in Xcode
+open *.xcworkspace
+```
+
+From Xcode:
+- Select your device or simulator as the build target
+- **Run** (⌘R) for local testing
+- **Product → Archive** for TestFlight / App Store distribution
+
+> **Requires:** macOS, Xcode 15+, and an [Apple Developer account](https://developer.apple.com) ($99/yr) for TestFlight.
+
+## 🧪 Tests
+
+```bash
+npm test           # Run all 142 unit tests
+npm run test:coverage  # With coverage report
+```
 
 ## 📐 Project Structure
 

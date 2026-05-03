@@ -20,11 +20,13 @@ import {
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts, fontSize, spacing, radius, shadows } from '../theme';
 import { GlassCard } from '../components/GlassCard';
 import { GlassModal } from '../components/GlassModal';
 import { Session, RootStackParamList } from '../types';
 import { getAllSessions, deleteSession } from '../database/sessionRepository';
+import { formatDateDisplay } from '../utils/formatDate';
 
 // Enable LayoutAnimation on Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -35,9 +37,11 @@ type NavProp = NativeStackNavigationProp<RootStackParamList, 'SessionsList'>;
 
 export function SessionsListScreen() {
   const navigation = useNavigation<NavProp>();
+  const insets = useSafeAreaInsets();
   const [sessions, setSessions] = useState<Session[]>([]);
   const [deleteTarget, setDeleteTarget] = useState<Session | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -62,7 +66,7 @@ export function SessionsListScreen() {
     const q = searchQuery.toLowerCase().trim();
     return sessions.filter((s) => {
       const name = s.name.toLowerCase();
-      const date = formatDate(s.date || s.createdAt).toLowerCase();
+      const date = formatDateDisplay(s.date || s.createdAt).toLowerCase();
       const method = s.syncMethod.toLowerCase();
       const fps = String(s.frameRate);
       return (
@@ -79,11 +83,16 @@ export function SessionsListScreen() {
   };
 
   const handleConfirmDelete = async () => {
-    if (!deleteTarget) return;
-    await deleteSession(deleteTarget.id);
-    setDeleteTarget(null);
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    loadSessions();
+    if (!deleteTarget || isDeleting) return;
+    setIsDeleting(true);
+    try {
+      await deleteSession(deleteTarget.id);
+      setDeleteTarget(null);
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      await loadSessions();
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const renderSession = ({ item }: { item: Session }) => (
@@ -101,7 +110,7 @@ export function SessionsListScreen() {
             </View>
           </View>
 
-          <Text style={styles.sessionDate}>{formatDate(item.date || item.createdAt)}</Text>
+          <Text style={styles.sessionDate}>{formatDateDisplay(item.date || item.createdAt)}</Text>
 
           <View style={styles.cardBottom}>
             <View style={styles.markerBadge}>
@@ -170,7 +179,7 @@ export function SessionsListScreen() {
       <View style={styles.bgGlow} />
 
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
         <View>
           <Text style={styles.logo}>MOMEN</Text>
           <Text style={styles.tagline}>Timecoded marker logging</Text>
@@ -270,14 +279,6 @@ export function SessionsListScreen() {
   );
 }
 
-function formatDate(isoDate: string): string {
-  const d = new Date(isoDate);
-  return d.toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  }).toUpperCase();
-}
 
 const styles = StyleSheet.create({
   screen: {

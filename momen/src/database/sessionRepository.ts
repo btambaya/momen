@@ -86,6 +86,8 @@ export async function updateSessionSync(
 
 export async function deleteSession(id: string): Promise<void> {
   const db = await getDatabase();
+  // Explicit cascade — delete markers first in case FK pragma isn't active
+  await db.runAsync('DELETE FROM markers WHERE session_id = ?', [id]);
   await db.runAsync('DELETE FROM sessions WHERE id = ?', [id]);
 }
 

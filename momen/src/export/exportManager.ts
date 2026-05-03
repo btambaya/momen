@@ -12,6 +12,7 @@ import { Session, Marker, FrameRate } from '../types';
 import { generateCSV } from './csvExporter';
 import { generateFCPXML } from './fcpxmlExporter';
 import { generateEDL } from './edlExporter';
+import { formatDateFilename } from '../utils/formatDate';
 
 export interface ExportResult {
   csvPath: string;
@@ -35,16 +36,17 @@ export async function generateExportFiles(
   session: Session,
   markers: Marker[]
 ): Promise<ExportResult> {
-  const dateStr = formatDate(session.date || session.createdAt);
+  const dateStr = formatDateFilename(session.date || session.createdAt);
   const safeName = session.name.replace(/[^a-zA-Z0-9_-]/g, '_');
   const fpsPart = fpsToFilenamePart(session.frameRate);
   const baseName = `${safeName}_${dateStr}_${fpsPart}_markers`;
 
-  // Ensure export directory exists
+  // Clean old exports to prevent stale file accumulation
   const exportDir = new Directory(Paths.cache, 'momen_exports');
-  if (!exportDir.exists) {
-    exportDir.create();
+  if (exportDir.exists) {
+    exportDir.delete();
   }
+  exportDir.create();
 
   // Generate all three formats
   const csvContent = generateCSV(markers, session.frameRate);
@@ -85,14 +87,4 @@ export async function shareFile(uri: string, mimeType: string): Promise<void> {
   } catch (error: any) {
     Alert.alert('Share Error', error.message || 'Failed to share file.');
   }
-}
-
-// ─── Helpers ─────────────────────────────────────────────────
-
-function formatDate(isoDate: string): string {
-  const d = new Date(isoDate);
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
-  return `${yyyy}${mm}${dd}`;
 }

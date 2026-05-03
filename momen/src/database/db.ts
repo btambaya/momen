@@ -51,6 +51,8 @@ export async function getDatabase(): Promise<SQLite.SQLiteDatabase> {
       created_at TEXT NOT NULL,
       FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE
     );
+
+    CREATE INDEX IF NOT EXISTS idx_markers_session ON markers(session_id);
   `);
 
   // Migration: add columns for existing databases

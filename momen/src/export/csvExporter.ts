@@ -6,15 +6,13 @@
  */
 
 import { Marker, FrameRate } from '../types';
-import { msToSmpte, addOneSecondMs } from '../engine/timecode';
-
-const SYNC_NOTE = 'Align this marker to the frame of the clap in your footage to synchronise all subsequent markers.';
+import { SYNC_NOTE } from '../constants';
 
 export function generateCSV(markers: Marker[], fps: FrameRate): string {
   const header = 'Marker Number,Timecode,Duration,Note,Sync Point';
 
   const rows = markers.map((marker) => {
-    const duration = msToSmpte(1000, fps); // 1 second duration
+    const duration = '00:00:01:00'; // Conventional 1-second SMPTE duration
     const note = marker.isSyncPoint
       ? escapeCSV(SYNC_NOTE)
       : escapeCSV(marker.note);

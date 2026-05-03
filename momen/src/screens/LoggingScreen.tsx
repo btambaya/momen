@@ -20,6 +20,7 @@ import {
 import * as Haptics from 'expo-haptics';
 import { useNavigation, useRoute, RouteProp, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts, fontSize, spacing, radius } from '../theme';
 import { TimecodeDisplay } from '../components/TimecodeDisplay';
 import { MarkButton } from '../components/MarkButton';
@@ -30,8 +31,7 @@ import { getSession, getSessionSyncData, endSession } from '../database/sessionR
 import { addMarker, getMarkers, updateMarkerNote, deleteMarker } from '../database/markerRepository';
 import { msToSmpte } from '../engine/timecode';
 import { generateExportFiles, shareFile } from '../export/exportManager';
-
-const SYNC_NOTE = 'Align this marker to the frame of the clap in your footage to synchronise all subsequent markers.';
+import { SYNC_NOTE } from '../constants';
 
 type NavProp = NativeStackNavigationProp<RootStackParamList, 'Logging'>;
 type RoutePropType = RouteProp<RootStackParamList, 'Logging'>;
@@ -39,6 +39,7 @@ type RoutePropType = RouteProp<RootStackParamList, 'Logging'>;
 export function LoggingScreen() {
   const navigation = useNavigation<NavProp>();
   const route = useRoute<RoutePropType>();
+  const insets = useSafeAreaInsets();
   const { sessionId } = route.params;
 
   const [session, setSession] = useState<Session | null>(null);
@@ -78,16 +79,24 @@ export function LoggingScreen() {
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        // If session is active (not ended), eat the back press
         if (session && !session.isEnded) {
-          return true; // handled — do nothing
+          return true;
         }
-        return false; // let default navigation happen
+        return false;
       };
       const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
       return () => sub.remove();
     }, [session])
   );
+
+  // Block iOS swipe-back gesture when session is active
+  useEffect(() => {
+    if (session && !session.isEnded) {
+      navigation.setOptions({ gestureEnabled: false });
+    } else {
+      navigation.setOptions({ gestureEnabled: true });
+    }
+  }, [session, navigation]);
 
   const loadSession = async () => {
     const s = await getSession(sessionId);
@@ -133,8 +142,8 @@ export function LoggingScreen() {
 
     const timecodeSmpte = msToSmpte(timecodeMs, session.frameRate);
 
-    const currentMarkers = await getMarkers(sessionId);
-    const isSyncPoint = session.syncMethod === 'clap' && currentMarkers.length === 0;
+    // Use in-memory markers.length — no extra DB call
+    const isSyncPoint = session.syncMethod === 'clap' && markers.length === 0;
 
     const marker = await addMarker(
       sessionId,
@@ -229,14 +238,6 @@ export function LoggingScreen() {
     }
   };
 
-  const getOffsetDisplay = (): string => {
-    if (!session || session.syncMethod !== 'manual') return '';
-    if (session.offsetMs === undefined || session.offsetMs === null) return '';
-    const absMs = Math.abs(session.offsetMs);
-    const sign = session.offsetMs >= 0 ? '+' : '-';
-    return `${sign}${msToSmpte(absMs, session.frameRate)}`;
-  };
-
   const getSyncTimeDisplay = (): string => {
     if (!session?.syncTime) return '';
     const d = new Date(session.syncTime);
@@ -274,7 +275,7 @@ export function LoggingScreen() {
       <View style={styles.bgGlowTeal} />
 
       {/* Header — back only visible when session is ended */}
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 4 }]}>
         {session.isEnded ? (
           <TouchableOpacity
             onPress={() => navigation.goBack()}
@@ -319,14 +320,6 @@ export function LoggingScreen() {
             {session.syncMethod === 'manual' ? 'Manual' : 'Clap'}
           </Text>
         </View>
-        {session.syncMethod === 'manual' && session.cameraTc && (
-          <View style={styles.syncInfoItem}>
-            <Text style={styles.syncInfoLabel}>OFFSET</Text>
-            <Text style={[styles.syncInfoValue, { color: colors.teal.text }]}>
-              {getOffsetDisplay()}
-            </Text>
-          </View>
-        )}
         {session.syncMethod === 'manual' && session.syncTime && (
           <View style={styles.syncInfoItem}>
             <Text style={styles.syncInfoLabel}>SYNCED AT</Text>
@@ -355,9 +348,7 @@ export function LoggingScreen() {
         {markers.length === 0 ? (
           <View style={styles.emptyList}>
             <Text style={styles.emptyListText}>
-              {session.syncMethod === 'clap'
-                ? 'Tap MARK and clap simultaneously to create your sync reference'
-                : 'Tap MARK to log your first marker'}
+              Tap MARK to log your first marker
             </Text>
           </View>
         ) : (
@@ -386,6 +377,7 @@ export function LoggingScreen() {
           onPress={handleExport}
           activeOpacity={0.7}
           disabled={isExporting}
+          accessibilityLabel="Export markers"
         >
           <Text style={styles.sideBtnText}>{isExporting ? '…' : 'Export'}</Text>
         </TouchableOpacity>
@@ -401,6 +393,7 @@ export function LoggingScreen() {
             style={[styles.sideBtn, styles.cutBtn]}
             onPress={() => setShowCutModal(true)}
             activeOpacity={0.7}
+            accessibilityLabel="Cut session"
           >
             <Text style={[styles.sideBtnText, styles.cutText]}>CUT</Text>
           </TouchableOpacity>

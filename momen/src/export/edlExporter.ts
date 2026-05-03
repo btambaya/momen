@@ -10,8 +10,7 @@
 
 import { Marker, Session } from '../types';
 import { msToSmpte, formatForEdl, isDropFrame, addOneSecondMs } from '../engine/timecode';
-
-const SYNC_NOTE = 'Align this marker to the frame of the clap in your footage to synchronise all subsequent markers.';
+import { SYNC_NOTE } from '../constants';
 
 export function generateEDL(session: Session, markers: Marker[]): string {
   const fps = session.frameRate;
@@ -38,10 +37,12 @@ export function generateEDL(session: Session, markers: Marker[]): string {
       ? SYNC_NOTE
       : (marker.note || `Marker ${marker.markerNumber}`);
 
+    const color = marker.isSyncPoint ? 'RED' : 'BLUE';
+
     return [
       `${eventNum}  AX       V     C        ${sourceIn} ${sourceOut} ${recordIn} ${recordOut}`,
       `* FROM CLIP NAME: ${markerName}`,
-      note ? `* COMMENT: ${note}` : '',
+      note ? `* LOC: ${recordIn} ${color}     ${note}` : '',
     ].filter(Boolean).join('\n');
   });
 

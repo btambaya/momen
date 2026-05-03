@@ -97,6 +97,7 @@ export function MarkButton({ onMark, disabled = false, markerCount }: MarkButton
           onPress={handlePress}
           activeOpacity={0.8}
           disabled={disabled}
+          accessibilityLabel={`Mark timecode, marker number ${markerCount + 1}`}
         >
           {/* Inner gradient overlay */}
           <View style={styles.innerHighlight} />

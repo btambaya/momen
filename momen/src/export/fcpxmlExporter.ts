@@ -12,8 +12,7 @@
 
 import { Marker, Session } from '../types';
 import { msToFrames, framesToRationalTime, getNominalFps, getActualFps } from '../engine/timecode';
-
-const SYNC_NOTE = 'Align this marker to the frame of the clap in your footage to synchronise all subsequent markers.';
+import { SYNC_NOTE } from '../constants';
 
 export function generateFCPXML(session: Session, markers: Marker[]): string {
   const fps = session.frameRate;

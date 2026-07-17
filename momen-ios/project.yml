@@ -1,0 +1,35 @@
+name: Momen
+options:
+  bundleIdPrefix: com.ahmadtambaya
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+
+packages:
+  MomenKit:
+    path: MomenKit
+
+targets:
+  Momen:
+    type: application
+    platform: iOS
+    sources:
+      - Momen
+    dependencies:
+      - package: MomenKit
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.ahmadtambaya.momen
+        SWIFT_VERSION: "5.0"
+        MARKETING_VERSION: "1.0.0"
+        CURRENT_PROJECT_VERSION: "1"
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Momen
+        INFOPLIST_KEY_NSMicrophoneUsageDescription: "Momen uses the microphone to detect clap sounds for timecode sync."
+        INFOPLIST_KEY_UIUserInterfaceStyle: Dark
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
+        TARGETED_DEVICE_FAMILY: "1"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        ENABLE_USER_SCRIPT_SANDBOXING: YES

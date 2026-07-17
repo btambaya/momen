@@ -1,0 +1,488 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2279339A69B4752200B0189F /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5245791E3FD7CC411264767 /* Theme.swift */; };
+		2F843FFA21E7FDAEDE88C76D /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FBBEB9B2C6D2FA3546B44E1 /* Router.swift */; };
+		3243AD852E603B874A0A9827 /* LoggingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4015CB7649E24BCE90D0D41 /* LoggingView.swift */; };
+		411914C30160847C2139CE73 /* ClapListenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59015A16CF481098ADC392C1 /* ClapListenView.swift */; };
+		602D7AE7D4803F17459A4174 /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D369730FC28811FE2CD3B0D3 /* ShareSheet.swift */; };
+		7207CADD38C2FCB5EED36E6C /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B094D5440223148DE4F1388 /* Haptics.swift */; };
+		8566862610E25D02F0A06766 /* TimeSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDC5CB66AAEF41BF9EC405A5 /* TimeSource.swift */; };
+		8A605F23D0A3E725B2320329 /* MomenKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1D7017B83BCAC01F97F25B2B /* MomenKit */; };
+		8CFB42AEC5F6F59B2D9BC704 /* ExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72AED2CCD7B61E385819C0D4 /* ExportService.swift */; };
+		9B0727A442168AFBE70E0CAE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1334694586CC504FA069A9D2 /* Assets.xcassets */; };
+		A58E3EAF35223B1C017E3016 /* SessionsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 708FF2D8431A50BF3D53FFAD /* SessionsListView.swift */; };
+		A925A6C9ED7C28607CD8FA74 /* FrameRatePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A6338A156A11B2EDB000469 /* FrameRatePickerView.swift */; };
+		AA4740FD96FF9D0289704209 /* MomenApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECC3FCD2AB54D412820DC7E6 /* MomenApp.swift */; };
+		B9212C2431975AD3F163F872 /* TimecodeDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10C60DC81E9ACD2B745BA35E /* TimecodeDisplayView.swift */; };
+		C5D0F6D35627CD7E0B753AAB /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F3BA12195E57A446430EC6 /* Models.swift */; };
+		C63C017C08E8B678480A41DB /* GlassModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC73819F62A3B5DF470DF20C /* GlassModal.swift */; };
+		C87D99491DBA61EF03AA01D5 /* SyncView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3CA95ADA776EB24FB87B85D /* SyncView.swift */; };
+		C903F9A1333A23A5B6F0D395 /* ClapDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB7E3AA89390082AF216FA6 /* ClapDetector.swift */; };
+		CA82910FBA99895F96AB6028 /* TimecodeInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D64BFF0A0137513D730704B /* TimecodeInputView.swift */; };
+		DF2AD7A9D6F148B5135844B6 /* MarkButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBCBDB0D20B7BA2514A3E8F /* MarkButtonView.swift */; };
+		DFAAF60CB61D7393C7688DA7 /* CreateSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B74752193EE04BDD650C1065 /* CreateSessionView.swift */; };
+		F3217BCA02470BD3FCDD8FAD /* RollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2801F45D508F559C17B32C /* RollView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0FBBEB9B2C6D2FA3546B44E1 /* Router.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
+		10C60DC81E9ACD2B745BA35E /* TimecodeDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimecodeDisplayView.swift; sourceTree = "<group>"; };
+		1334694586CC504FA069A9D2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		1B094D5440223148DE4F1388 /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
+		2DBCBDB0D20B7BA2514A3E8F /* MarkButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkButtonView.swift; sourceTree = "<group>"; };
+		59015A16CF481098ADC392C1 /* ClapListenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClapListenView.swift; sourceTree = "<group>"; };
+		708FF2D8431A50BF3D53FFAD /* SessionsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionsListView.swift; sourceTree = "<group>"; };
+		72AED2CCD7B61E385819C0D4 /* ExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportService.swift; sourceTree = "<group>"; };
+		7A6338A156A11B2EDB000469 /* FrameRatePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameRatePickerView.swift; sourceTree = "<group>"; };
+		7D64BFF0A0137513D730704B /* TimecodeInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimecodeInputView.swift; sourceTree = "<group>"; };
+		92F3BA12195E57A446430EC6 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		A6F22781F96AC69B0D8DCE43 /* Momen.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Momen.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA2801F45D508F559C17B32C /* RollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RollView.swift; sourceTree = "<group>"; };
+		B5245791E3FD7CC411264767 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		B74752193EE04BDD650C1065 /* CreateSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateSessionView.swift; sourceTree = "<group>"; };
+		BA8D25DF8B8DE8A4BC01B30A /* MomenKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = MomenKit; path = MomenKit; sourceTree = SOURCE_ROOT; };
+		BAB7E3AA89390082AF216FA6 /* ClapDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClapDetector.swift; sourceTree = "<group>"; };
+		CDC5CB66AAEF41BF9EC405A5 /* TimeSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSource.swift; sourceTree = "<group>"; };
+		D369730FC28811FE2CD3B0D3 /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
+		D4015CB7649E24BCE90D0D41 /* LoggingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingView.swift; sourceTree = "<group>"; };
+		DC73819F62A3B5DF470DF20C /* GlassModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassModal.swift; sourceTree = "<group>"; };
+		ECC3FCD2AB54D412820DC7E6 /* MomenApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomenApp.swift; sourceTree = "<group>"; };
+		F3CA95ADA776EB24FB87B85D /* SyncView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		6FF8DC737124D657992E4CB0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8A605F23D0A3E725B2320329 /* MomenKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0076CC1E7B1910855BDA69E7 = {
+			isa = PBXGroup;
+			children = (
+				A3E3EC46BEC19712ECAEA33E /* Momen */,
+				AA18428D5322817BE4954859 /* Packages */,
+				33CCECA5B2E12D3D1FD4A1BF /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		33CCECA5B2E12D3D1FD4A1BF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A6F22781F96AC69B0D8DCE43 /* Momen.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8B6D7A9E18B87F7C128C982E /* Export */ = {
+			isa = PBXGroup;
+			children = (
+				72AED2CCD7B61E385819C0D4 /* ExportService.swift */,
+			);
+			path = Export;
+			sourceTree = "<group>";
+		};
+		A3E3EC46BEC19712ECAEA33E /* Momen */ = {
+			isa = PBXGroup;
+			children = (
+				1334694586CC504FA069A9D2 /* Assets.xcassets */,
+				ECC3FCD2AB54D412820DC7E6 /* MomenApp.swift */,
+				F70F0E2666C5214D838EA499 /* Audio */,
+				8B6D7A9E18B87F7C128C982E /* Export */,
+				ED3145C1D9866DF0253E09C5 /* Models */,
+				E6495F138C172E5037EF172F /* Support */,
+				DB9662EBF1C691DF62B13C9B /* Views */,
+			);
+			path = Momen;
+			sourceTree = "<group>";
+		};
+		A5CBC875DB8E70D4744C4D48 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				7A6338A156A11B2EDB000469 /* FrameRatePickerView.swift */,
+				DC73819F62A3B5DF470DF20C /* GlassModal.swift */,
+				2DBCBDB0D20B7BA2514A3E8F /* MarkButtonView.swift */,
+				D369730FC28811FE2CD3B0D3 /* ShareSheet.swift */,
+				10C60DC81E9ACD2B745BA35E /* TimecodeDisplayView.swift */,
+				7D64BFF0A0137513D730704B /* TimecodeInputView.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		AA18428D5322817BE4954859 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				BA8D25DF8B8DE8A4BC01B30A /* MomenKit */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		DB9662EBF1C691DF62B13C9B /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				59015A16CF481098ADC392C1 /* ClapListenView.swift */,
+				B74752193EE04BDD650C1065 /* CreateSessionView.swift */,
+				D4015CB7649E24BCE90D0D41 /* LoggingView.swift */,
+				AA2801F45D508F559C17B32C /* RollView.swift */,
+				708FF2D8431A50BF3D53FFAD /* SessionsListView.swift */,
+				F3CA95ADA776EB24FB87B85D /* SyncView.swift */,
+				A5CBC875DB8E70D4744C4D48 /* Components */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		E6495F138C172E5037EF172F /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				1B094D5440223148DE4F1388 /* Haptics.swift */,
+				0FBBEB9B2C6D2FA3546B44E1 /* Router.swift */,
+				B5245791E3FD7CC411264767 /* Theme.swift */,
+				CDC5CB66AAEF41BF9EC405A5 /* TimeSource.swift */,
+			);
+			path = Support;
+			sourceTree = "<group>";
+		};
+		ED3145C1D9866DF0253E09C5 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				92F3BA12195E57A446430EC6 /* Models.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		F70F0E2666C5214D838EA499 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				BAB7E3AA89390082AF216FA6 /* ClapDetector.swift */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A7BA88824C53B315B8EF5565 /* Momen */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 73DDBA5E76E42182ED84AB94 /* Build configuration list for PBXNativeTarget "Momen" */;
+			buildPhases = (
+				FEC8AA001EA4EA0C62F6D06F /* Sources */,
+				5974DF77AE4F2076A3D7DB3C /* Resources */,
+				6FF8DC737124D657992E4CB0 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Momen;
+			packageProductDependencies = (
+				1D7017B83BCAC01F97F25B2B /* MomenKit */,
+			);
+			productName = Momen;
+			productReference = A6F22781F96AC69B0D8DCE43 /* Momen.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		9F77F14C13FBD5C63277EED4 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					A7BA88824C53B315B8EF5565 = {
+						DevelopmentTeam = M9ULD6M5Z3;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 378ECF212533EC4B062311D9 /* Build configuration list for PBXProject "Momen" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 0076CC1E7B1910855BDA69E7;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				16874BF04AA2C07B5D036C76 /* XCLocalSwiftPackageReference "MomenKit" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 33CCECA5B2E12D3D1FD4A1BF /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A7BA88824C53B315B8EF5565 /* Momen */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		5974DF77AE4F2076A3D7DB3C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9B0727A442168AFBE70E0CAE /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FEC8AA001EA4EA0C62F6D06F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C903F9A1333A23A5B6F0D395 /* ClapDetector.swift in Sources */,
+				411914C30160847C2139CE73 /* ClapListenView.swift in Sources */,
+				DFAAF60CB61D7393C7688DA7 /* CreateSessionView.swift in Sources */,
+				8CFB42AEC5F6F59B2D9BC704 /* ExportService.swift in Sources */,
+				A925A6C9ED7C28607CD8FA74 /* FrameRatePickerView.swift in Sources */,
+				C63C017C08E8B678480A41DB /* GlassModal.swift in Sources */,
+				7207CADD38C2FCB5EED36E6C /* Haptics.swift in Sources */,
+				3243AD852E603B874A0A9827 /* LoggingView.swift in Sources */,
+				DF2AD7A9D6F148B5135844B6 /* MarkButtonView.swift in Sources */,
+				C5D0F6D35627CD7E0B753AAB /* Models.swift in Sources */,
+				AA4740FD96FF9D0289704209 /* MomenApp.swift in Sources */,
+				F3217BCA02470BD3FCDD8FAD /* RollView.swift in Sources */,
+				2F843FFA21E7FDAEDE88C76D /* Router.swift in Sources */,
+				A58E3EAF35223B1C017E3016 /* SessionsListView.swift in Sources */,
+				602D7AE7D4803F17459A4174 /* ShareSheet.swift in Sources */,
+				C87D99491DBA61EF03AA01D5 /* SyncView.swift in Sources */,
+				2279339A69B4752200B0189F /* Theme.swift in Sources */,
+				8566862610E25D02F0A06766 /* TimeSource.swift in Sources */,
+				B9212C2431975AD3F163F872 /* TimecodeDisplayView.swift in Sources */,
+				CA82910FBA99895F96AB6028 /* TimecodeInputView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		3A976CD7A9455E7948D8FEF2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = M9ULD6M5Z3;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Momen;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Momen uses the microphone to detect clap sounds for timecode sync.";
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UIUserInterfaceStyle = Dark;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ahmadtambaya.momen;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		A70EB72031026682C371A5EE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		C9840E15D527F83253051729 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = M9ULD6M5Z3;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Momen;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Momen uses the microphone to detect clap sounds for timecode sync.";
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UIUserInterfaceStyle = Dark;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ahmadtambaya.momen;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		ECA18894701C078D491B03F9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		378ECF212533EC4B062311D9 /* Build configuration list for PBXProject "Momen" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ECA18894701C078D491B03F9 /* Debug */,
+				A70EB72031026682C371A5EE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		73DDBA5E76E42182ED84AB94 /* Build configuration list for PBXNativeTarget "Momen" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C9840E15D527F83253051729 /* Debug */,
+				3A976CD7A9455E7948D8FEF2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		16874BF04AA2C07B5D036C76 /* XCLocalSwiftPackageReference "MomenKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = MomenKit;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1D7017B83BCAC01F97F25B2B /* MomenKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MomenKit;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 9F77F14C13FBD5C63277EED4 /* Project object */;
+}

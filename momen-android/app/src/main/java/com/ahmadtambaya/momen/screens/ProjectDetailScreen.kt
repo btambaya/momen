@@ -2,6 +2,8 @@ package com.ahmadtambaya.momen.screens
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -54,8 +56,21 @@ fun ProjectDetailScreen(repo: Repository, nav: Nav, projectId: String) {
     var project by remember { mutableStateOf<Project?>(null) }
     var clips by remember { mutableStateOf(listOf<Clip>()) }
     var deleteTarget by remember { mutableStateOf<Clip?>(null) }
+    var showExportModal by remember { mutableStateOf(false) }
+    var showNoMarkers by remember { mutableStateOf(false) }
     // Reload whenever the nav stack returns to this screen (a clip ended, etc.).
     val stackDepth = nav.stack.size
+
+    val projectHasMarkers = clips.any { it.markerCount > 0 }
+
+    fun exportProject(formats: List<com.ahmadtambaya.momen.export.ExportFormat>) {
+        showExportModal = false
+        val proj = project ?: return
+        val zip = com.ahmadtambaya.momen.export.ExportManager
+            .generateProjectZip(context, repo, proj, formats)
+        if (zip == null) showNoMarkers = true
+        else com.ahmadtambaya.momen.export.ExportManager.share(context, listOf(zip))
+    }
 
     LaunchedEffect(stackDepth) {
         project = repo.getProject(projectId)
@@ -72,7 +87,11 @@ fun ProjectDetailScreen(repo: Repository, nav: Nav, projectId: String) {
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
             Box(Modifier.padding(horizontal = 20.dp)) {
-                ScreenHeaderRow(title = p?.name ?: "Project") { nav.pop() }
+                ScreenHeaderRow(
+                    title = p?.name ?: "Project",
+                    exportEnabled = projectHasMarkers,
+                    onExport = { if (projectHasMarkers) showExportModal = true else showNoMarkers = true },
+                    onBack = { nav.pop() })
             }
 
             if (p != null) {
@@ -134,11 +153,34 @@ fun ProjectDetailScreen(repo: Repository, nav: Nav, projectId: String) {
                 },
                 ModalAction("Cancel", ModalAction.Style.CANCEL) { deleteTarget = null }),
             onDismiss = { deleteTarget = null })
+
+        GlassModal(
+            visible = showExportModal,
+            title = "Export Project",
+            message = "Export every clip as its own file, bundled in a \"${p?.name ?: ""}\" folder. Choose a format.",
+            actions = com.ahmadtambaya.momen.export.ExportFormat.entries.map { fmt ->
+                ModalAction(fmt.label) { exportProject(listOf(fmt)) }
+            } + listOf(
+                ModalAction("All Formats") {
+                    exportProject(com.ahmadtambaya.momen.export.ExportFormat.entries.toList())
+                },
+                ModalAction("Cancel", ModalAction.Style.CANCEL) { showExportModal = false }),
+            onDismiss = { showExportModal = false })
+
+        GlassModal(
+            visible = showNoMarkers,
+            title = "No Markers",
+            message = "Log some markers in a clip before exporting the project.",
+            accent = T.Amber,
+            actions = listOf(ModalAction("OK") { showNoMarkers = false }),
+            onDismiss = { showNoMarkers = false })
     }
 }
 
 @Composable
-private fun ScreenHeaderRow(title: String, onBack: () -> Unit) {
+private fun ScreenHeaderRow(
+    title: String, exportEnabled: Boolean, onExport: () -> Unit, onBack: () -> Unit,
+) {
     Row(
         Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -147,7 +189,13 @@ private fun ScreenHeaderRow(title: String, onBack: () -> Unit) {
         Spacer(Modifier.weight(1f))
         Text(title, style = T.sans(20, FontWeight.SemiBold))
         Spacer(Modifier.weight(1f))
-        Spacer(Modifier.size(40.dp))
+        Box(
+            Modifier.size(40.dp).clip(CircleShape).background(T.GlassBg)
+                .border(1.dp, T.GlassBorder, CircleShape).clickable(onClick = onExport),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text("⬆", style = T.mono(15, color = if (exportEnabled) T.CoralText else T.TextTertiary))
+        }
     }
 }
 

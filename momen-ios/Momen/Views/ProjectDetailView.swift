@@ -12,7 +12,14 @@ struct ProjectDetailView: View {
     @State private var project: Project?
     @State private var deleteTarget: Clip?
     @State private var showDeleteModal = false
+    @State private var showExportModal = false
+    @State private var showNoMarkersModal = false
+    @State private var shareItem: ShareItem?
     @State private var refreshToken = 0
+
+    private var projectHasMarkers: Bool {
+        project?.clips.contains { !$0.markers.isEmpty } ?? false
+    }
 
     var body: some View {
         ZStack {
@@ -50,12 +57,30 @@ struct ProjectDetailView: View {
                     showDeleteModal = false
                 },
             ])
+        .glassModal(
+            isPresented: $showExportModal,
+            title: "Export Project",
+            message: "Export every clip as its own file, bundled in a \"\(project?.name ?? "")\" folder. Choose a format.",
+            actions: ExportFormat.allCases.map { fmt in
+                GlassModalAction(text: fmt.label) { exportProject([fmt]) }
+            } + [
+                GlassModalAction(text: "All Formats") { exportProject(ExportFormat.allCases) },
+                GlassModalAction(text: "Cancel", style: .cancel) { showExportModal = false },
+            ])
+        .glassModal(
+            isPresented: $showNoMarkersModal,
+            title: "No Markers",
+            message: "Log some markers in a clip before exporting the project.",
+            accent: Theme.amber,
+            actions: [GlassModalAction(text: "OK") { showNoMarkersModal = false }])
+        .sheet(item: $shareItem) { item in
+            ShareSheet(urls: item.urls).presentationDetents([.medium, .large])
+        }
     }
 
     private func content(_ project: Project) -> some View {
         VStack(spacing: 0) {
-            ScreenHeader(title: project.name) { router.pop() }
-                .padding(.horizontal, 20)
+            header(project)
 
             HStack(spacing: 8) {
                 Text(displayDate(project.date)).font(.momenMono(10)).kerning(1)
@@ -90,6 +115,46 @@ struct ProjectDetailView: View {
                 }
                 .padding(.horizontal, 20).padding(.bottom, 120)
             }
+        }
+    }
+
+    /// Back button + title + an Export action (enabled once any clip has markers).
+    private func header(_ project: Project) -> some View {
+        HStack {
+            Button { router.pop() } label: {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 17, weight: .medium)).foregroundStyle(Theme.textPrimary)
+                    .frame(width: 40, height: 40).background(Theme.glassBg).clipShape(Circle())
+                    .overlay(Circle().strokeBorder(Theme.glassBorder, lineWidth: 1))
+            }
+            Spacer()
+            Text(project.name).font(.momenSans(20, weight: .semibold))
+                .foregroundStyle(Theme.textPrimary).lineLimit(1)
+            Spacer()
+            Button {
+                if projectHasMarkers { showExportModal = true } else { showNoMarkersModal = true }
+            } label: {
+                Image(systemName: "square.and.arrow.up")
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundStyle(projectHasMarkers ? Theme.coralText : Theme.textTertiary)
+                    .frame(width: 40, height: 40).background(Theme.glassBg).clipShape(Circle())
+                    .overlay(Circle().strokeBorder(Theme.glassBorder, lineWidth: 1))
+            }
+            .accessibilityLabel("Export project")
+        }
+        .padding(.horizontal, 20).padding(.top, 8).padding(.bottom, 20)
+    }
+
+    private func exportProject(_ formats: [ExportFormat]) {
+        showExportModal = false
+        guard let project else { return }
+        do {
+            let zip = try ExportService.generateProjectZip(for: project, formats: formats)
+            shareItem = ShareItem(urls: [zip])
+        } catch ExportService.ExportError.noMarkers {
+            showNoMarkersModal = true
+        } catch {
+            // Zip/write failure — share sheet simply won't open.
         }
     }
 

@@ -36,85 +36,52 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
-fun CreateSessionScreen(repo: Repository, nav: Nav) {
+fun CreateProjectScreen(repo: Repository, nav: Nav) {
     var name by remember { mutableStateOf("") }
     var frameRate by remember { mutableStateOf(FrameRate.FPS_24) }
 
-    Column(
-        Modifier
-            .fillMaxSize()
-            .padding(horizontal = 20.dp),
-    ) {
-        ScreenHeader("New Session") { nav.pop() }
+    Column(Modifier.fillMaxSize().padding(horizontal = 20.dp)) {
+        ScreenHeader("New Project") { nav.pop() }
 
-        Column(
-            Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState()),
-        ) {
-            Text(
-                "Set up the session details before syncing to your camera's timecode.",
+        Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
+            Text("Set up the shoot before you add clips. The frame rate applies to every clip in this project.",
                 style = T.sans(14, color = T.TextSecondary))
 
-            FieldLabel("SESSION NAME")
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .glassCard()
-                    .padding(20.dp),
-            ) {
+            FieldLabel("PROJECT NAME")
+            Box(Modifier.fillMaxWidth().glassCard().padding(20.dp)) {
                 BasicTextField(
                     value = name,
-                    onValueChange = {
-                        name = it.take(MomenConstants.MAX_SESSION_NAME_LENGTH)
-                    },
-                    textStyle = T.sans(17, color = T.TextPrimary),
-                    singleLine = true,
-                    cursorBrush = SolidColor(T.CoralText),
-                    modifier = Modifier.fillMaxWidth(),
+                    onValueChange = { name = it.take(MomenConstants.MAX_SESSION_NAME_LENGTH) },
+                    textStyle = T.sans(17, color = T.TextPrimary), singleLine = true,
+                    cursorBrush = SolidColor(T.CoralText), modifier = Modifier.fillMaxWidth(),
                     decorationBox = { inner ->
-                        if (name.isEmpty()) {
-                            Text(
-                                "e.g. Documentary Shoot Day 1",
-                                style = T.sans(17, color = T.TextTertiary))
-                        }
+                        if (name.isEmpty())
+                            Text("e.g. Documentary — Day 1", style = T.sans(17, color = T.TextTertiary))
                         inner()
                     })
             }
 
             FieldLabel("DATE")
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .glassCard()
-                    .padding(20.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    SimpleDateFormat("EEEE d MMMM yyyy", Locale.UK).format(Date()),
+            Row(Modifier.fillMaxWidth().glassCard().padding(20.dp),
+                verticalAlignment = Alignment.CenterVertically) {
+                Text(SimpleDateFormat("EEEE d MMMM yyyy", Locale.UK).format(Date()),
                     style = T.sans(15), modifier = Modifier.weight(1f))
                 Text("Today", style = T.mono(10, color = T.TealText, letterSpacing = 1.0))
             }
 
             FieldLabel("FRAME RATE")
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .glassCard()
-                    .padding(20.dp),
-            ) {
+            Column(Modifier.fillMaxWidth().glassCard().padding(20.dp)) {
                 FrameRatePicker(frameRate) { frameRate = it }
                 Spacer(Modifier.height(16.dp))
-                Text(
-                    "⚠ Must match your camera's recording frame rate. An incorrect setting will cause markers to land on the wrong frame in the editor.",
+                Text("⚠ Must match your camera's recording frame rate. An incorrect setting will land markers on the wrong frame in the editor.",
                     style = T.sans(12, color = T.AmberText.copy(alpha = 0.8f)))
             }
         }
 
         Box(Modifier.padding(vertical = 12.dp)) {
-            PrimaryButton("Continue to Sync  →", enabled = name.isNotBlank()) {
-                val session = repo.createSession(name.trim(), frameRate)
-                nav.replace(Route.Sync(session.id, frameRate))
+            PrimaryButton("Continue  →", enabled = name.isNotBlank()) {
+                val project = repo.createProject(name.trim(), frameRate)
+                nav.replace(Route.ClipPrefix(project.id))
             }
         }
     }
@@ -122,7 +89,6 @@ fun CreateSessionScreen(repo: Repository, nav: Nav) {
 
 @Composable
 private fun FieldLabel(text: String) {
-    Text(
-        text, style = T.mono(10, color = T.TextTertiary, letterSpacing = 2.0),
+    Text(text, style = T.mono(10, color = T.TextTertiary, letterSpacing = 2.0),
         modifier = Modifier.padding(top = 24.dp, bottom = 12.dp))
 }

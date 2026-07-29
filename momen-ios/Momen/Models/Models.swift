@@ -2,40 +2,26 @@ import Foundation
 import SwiftData
 import MomenKit
 
+/// A shoot. Holds the shared frame rate + clip-naming prefix, and many clips.
 @Model
-final class Session {
+final class Project {
     @Attribute(.unique) var id: String
     var name: String
     var date: Date
-    var syncMethodRaw: String
-    var syncTime: Date?
     var frameRateRaw: Double
-    var cameraTc: String?
-    /// Monotonic uptime (ms) captured at the sync moment — exact within a boot.
-    var syncUptimeMs: Double
-    /// Wall-clock time of the sync moment — restores timing across relaunch/reboot.
-    var syncDate: Date?
-    var cameraTcMs: Double
-    var isEnded: Bool
-    var finalTcMs: Double
+    /// Set once (on the first clip) and reused to auto-number later clips.
+    var clipPrefix: String
     var createdAt: Date
 
-    @Relationship(deleteRule: .cascade, inverse: \Marker.session)
-    var markers: [Marker] = []
+    @Relationship(deleteRule: .cascade, inverse: \Clip.project)
+    var clips: [Clip] = []
 
-    init(name: String, date: Date = Date(), frameRate: FrameRate) {
+    init(name: String, date: Date = Date(), frameRate: FrameRate, clipPrefix: String = "") {
         self.id = UUID().uuidString
         self.name = name
         self.date = date
-        self.syncMethodRaw = SyncMethod.manual.rawValue
-        self.syncTime = nil
         self.frameRateRaw = frameRate.rawValue
-        self.cameraTc = nil
-        self.syncUptimeMs = 0
-        self.syncDate = nil
-        self.cameraTcMs = 0
-        self.isEnded = false
-        self.finalTcMs = 0
+        self.clipPrefix = clipPrefix
         self.createdAt = Date()
     }
 
@@ -44,21 +30,63 @@ final class Session {
         set { frameRateRaw = newValue.rawValue }
     }
 
-    var syncMethod: SyncMethod {
-        get { SyncMethod(rawValue: syncMethodRaw) ?? .manual }
-        set { syncMethodRaw = newValue.rawValue }
+    var sortedClips: [Clip] {
+        clips.sorted { $0.clipNumber < $1.clipNumber }
     }
+
+    var hasPrefix: Bool { !clipPrefix.isEmpty }
+
+    /// Create the next auto-numbered clip in this project (clap-synced).
+    @discardableResult
+    func addClip() -> Clip {
+        let number = (clips.map(\.clipNumber).max() ?? 0) + 1
+        let clip = Clip(
+            name: ClipNaming.name(prefix: clipPrefix, number: number),
+            clipNumber: number)
+        clips.append(clip)
+        return clip
+    }
+}
+
+/// One take within a project — its own clap sync, markers, and export.
+@Model
+final class Clip {
+    @Attribute(.unique) var id: String
+    var name: String
+    var clipNumber: Int
+    /// Monotonic uptime (ms) captured at the clap; exact within a boot.
+    var syncUptimeMs: Double
+    /// Wall-clock time of the clap — restores timing across relaunch/reboot.
+    var syncDate: Date?
+    var isEnded: Bool
+    var finalTcMs: Double
+    var createdAt: Date
+    var project: Project?
+
+    @Relationship(deleteRule: .cascade, inverse: \Marker.clip)
+    var markers: [Marker] = []
+
+    init(name: String, clipNumber: Int) {
+        self.id = UUID().uuidString
+        self.name = name
+        self.clipNumber = clipNumber
+        self.syncUptimeMs = 0
+        self.syncDate = nil
+        self.isEnded = false
+        self.finalTcMs = 0
+        self.createdAt = Date()
+    }
+
+    var frameRate: FrameRate { project?.frameRate ?? .fps24 }
+    var isSynced: Bool { syncDate != nil }
 
     var sortedMarkers: [Marker] {
         markers.sorted { $0.markerNumber < $1.markerNumber }
     }
 
-    var isSynced: Bool { syncDate != nil }
-
-    /// Monotonic reference (in TimeSource.nowMs terms) for the sync moment.
-    /// Uses the exact stored uptime when still in the same boot session,
-    /// otherwise reconstructs from the wall clock so sessions survive
-    /// relaunches and reboots (an improvement over the RN app).
+    /// Monotonic reference (in TimeSource.nowMs terms) for the clap moment.
+    /// Exact stored uptime within the same boot, else reconstructed from the
+    /// wall clock so an active clip survives relaunch/reboot.
     var syncReferenceMs: Double? {
         guard let syncDate else { return nil }
         let now = TimeSource.nowMs
@@ -69,15 +97,9 @@ final class Session {
         return uptimeConsistent ? syncUptimeMs : now - wallElapsedMs
     }
 
-    func recordSync(
-        method: SyncMethod, cameraTc: String?, cameraTcMs: Double, syncUptimeMs: Double
-    ) {
-        self.syncMethod = method
-        self.cameraTc = cameraTc
-        self.cameraTcMs = cameraTcMs
+    func recordSync(syncUptimeMs: Double) {
         self.syncUptimeMs = syncUptimeMs
         self.syncDate = Date(timeIntervalSinceNow: -(TimeSource.nowMs - syncUptimeMs) / 1000.0)
-        self.syncTime = Date()
     }
 
     func end(finalTcMs: Double) {
@@ -85,8 +107,32 @@ final class Session {
         self.finalTcMs = finalTcMs
     }
 
+    /// Append a marker with the next sequential number.
+    @discardableResult
+    func addMarker(
+        timecodeMs: Double, timecodeSmpte: String,
+        note: String = "", isSyncPoint: Bool = false
+    ) -> Marker {
+        let marker = Marker(
+            markerNumber: markers.count + 1,
+            timecodeMs: timecodeMs, timecodeSmpte: timecodeSmpte,
+            note: note, isSyncPoint: isSyncPoint)
+        markers.append(marker)
+        return marker
+    }
+
+    /// Delete a marker and close the numbering gap.
+    func deleteMarker(_ marker: Marker, context: ModelContext) {
+        let removedNumber = marker.markerNumber
+        markers.removeAll { $0.id == marker.id }
+        context.delete(marker)
+        for m in markers where m.markerNumber > removedNumber {
+            m.markerNumber -= 1
+        }
+    }
+
     var exportInfo: ExportSessionInfo {
-        ExportSessionInfo(name: name, date: date, frameRate: frameRate)
+        ExportSessionInfo(name: name, date: project?.date ?? createdAt, frameRate: frameRate)
     }
 }
 
@@ -99,7 +145,7 @@ final class Marker {
     var note: String
     var isSyncPoint: Bool
     var createdAt: Date
-    var session: Session?
+    var clip: Clip?
 
     init(markerNumber: Int, timecodeMs: Double, timecodeSmpte: String,
          note: String = "", isSyncPoint: Bool = false) {
@@ -116,33 +162,5 @@ final class Marker {
         ExportMarker(
             markerNumber: markerNumber, timecodeMs: timecodeMs,
             timecodeSmpte: timecodeSmpte, note: note, isSyncPoint: isSyncPoint)
-    }
-}
-
-// ─── Session operations ──────────────────────────────────────
-
-extension Session {
-    /// Append a marker with the next sequential number.
-    @discardableResult
-    func addMarker(
-        timecodeMs: Double, timecodeSmpte: String,
-        note: String = "", isSyncPoint: Bool = false
-    ) -> Marker {
-        let marker = Marker(
-            markerNumber: markers.count + 1,
-            timecodeMs: timecodeMs, timecodeSmpte: timecodeSmpte,
-            note: note, isSyncPoint: isSyncPoint)
-        markers.append(marker)
-        return marker
-    }
-
-    /// Delete a marker and close the numbering gap, matching the RN behaviour.
-    func deleteMarker(_ marker: Marker, context: ModelContext) {
-        let removedNumber = marker.markerNumber
-        markers.removeAll { $0.id == marker.id }
-        context.delete(marker)
-        for m in markers where m.markerNumber > removedNumber {
-            m.markerNumber -= 1
-        }
     }
 }

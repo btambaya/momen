@@ -17,44 +17,44 @@
 		8A605F23D0A3E725B2320329 /* MomenKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1D7017B83BCAC01F97F25B2B /* MomenKit */; };
 		8CFB42AEC5F6F59B2D9BC704 /* ExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72AED2CCD7B61E385819C0D4 /* ExportService.swift */; };
 		9B0727A442168AFBE70E0CAE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1334694586CC504FA069A9D2 /* Assets.xcassets */; };
-		A58E3EAF35223B1C017E3016 /* SessionsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 708FF2D8431A50BF3D53FFAD /* SessionsListView.swift */; };
 		A925A6C9ED7C28607CD8FA74 /* FrameRatePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A6338A156A11B2EDB000469 /* FrameRatePickerView.swift */; };
 		AA4740FD96FF9D0289704209 /* MomenApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECC3FCD2AB54D412820DC7E6 /* MomenApp.swift */; };
 		B9212C2431975AD3F163F872 /* TimecodeDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10C60DC81E9ACD2B745BA35E /* TimecodeDisplayView.swift */; };
+		BEE3BE696C94A88D1F5ACC6B /* ScreenHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1443CC11B531AA8F592B6E48 /* ScreenHeader.swift */; };
 		C5D0F6D35627CD7E0B753AAB /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F3BA12195E57A446430EC6 /* Models.swift */; };
 		C63C017C08E8B678480A41DB /* GlassModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC73819F62A3B5DF470DF20C /* GlassModal.swift */; };
-		C87D99491DBA61EF03AA01D5 /* SyncView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3CA95ADA776EB24FB87B85D /* SyncView.swift */; };
 		C903F9A1333A23A5B6F0D395 /* ClapDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB7E3AA89390082AF216FA6 /* ClapDetector.swift */; };
-		CA82910FBA99895F96AB6028 /* TimecodeInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D64BFF0A0137513D730704B /* TimecodeInputView.swift */; };
+		D1EB8CEBB306813D886C1C0A /* ClipPrefixView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6957B62B4EBF7890CF00E4F /* ClipPrefixView.swift */; };
 		DF2AD7A9D6F148B5135844B6 /* MarkButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBCBDB0D20B7BA2514A3E8F /* MarkButtonView.swift */; };
-		DFAAF60CB61D7393C7688DA7 /* CreateSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B74752193EE04BDD650C1065 /* CreateSessionView.swift */; };
-		F3217BCA02470BD3FCDD8FAD /* RollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2801F45D508F559C17B32C /* RollView.swift */; };
+		E501B78F768BB9F92ABA0A22 /* CreateProjectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3FDF8911C97EEBF63A8986A /* CreateProjectView.swift */; };
+		E92A2CF431B6E09A6784543A /* ProjectDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000FFD15CC1F2A2FD0646F79 /* ProjectDetailView.swift */; };
+		EAEB48DCADE79317497080F6 /* ProjectsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 878749BFA7EBE687D5E0215C /* ProjectsListView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		000FFD15CC1F2A2FD0646F79 /* ProjectDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectDetailView.swift; sourceTree = "<group>"; };
 		0FBBEB9B2C6D2FA3546B44E1 /* Router.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
 		10C60DC81E9ACD2B745BA35E /* TimecodeDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimecodeDisplayView.swift; sourceTree = "<group>"; };
 		1334694586CC504FA069A9D2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		1443CC11B531AA8F592B6E48 /* ScreenHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenHeader.swift; sourceTree = "<group>"; };
 		1B094D5440223148DE4F1388 /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
 		2DBCBDB0D20B7BA2514A3E8F /* MarkButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkButtonView.swift; sourceTree = "<group>"; };
 		59015A16CF481098ADC392C1 /* ClapListenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClapListenView.swift; sourceTree = "<group>"; };
-		708FF2D8431A50BF3D53FFAD /* SessionsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionsListView.swift; sourceTree = "<group>"; };
 		72AED2CCD7B61E385819C0D4 /* ExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportService.swift; sourceTree = "<group>"; };
 		7A6338A156A11B2EDB000469 /* FrameRatePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameRatePickerView.swift; sourceTree = "<group>"; };
-		7D64BFF0A0137513D730704B /* TimecodeInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimecodeInputView.swift; sourceTree = "<group>"; };
+		878749BFA7EBE687D5E0215C /* ProjectsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectsListView.swift; sourceTree = "<group>"; };
 		92F3BA12195E57A446430EC6 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		A6F22781F96AC69B0D8DCE43 /* Momen.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Momen.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		AA2801F45D508F559C17B32C /* RollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RollView.swift; sourceTree = "<group>"; };
 		B5245791E3FD7CC411264767 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
-		B74752193EE04BDD650C1065 /* CreateSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateSessionView.swift; sourceTree = "<group>"; };
+		B6957B62B4EBF7890CF00E4F /* ClipPrefixView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipPrefixView.swift; sourceTree = "<group>"; };
 		BA8D25DF8B8DE8A4BC01B30A /* MomenKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = MomenKit; path = MomenKit; sourceTree = SOURCE_ROOT; };
 		BAB7E3AA89390082AF216FA6 /* ClapDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClapDetector.swift; sourceTree = "<group>"; };
 		CDC5CB66AAEF41BF9EC405A5 /* TimeSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSource.swift; sourceTree = "<group>"; };
 		D369730FC28811FE2CD3B0D3 /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
+		D3FDF8911C97EEBF63A8986A /* CreateProjectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateProjectView.swift; sourceTree = "<group>"; };
 		D4015CB7649E24BCE90D0D41 /* LoggingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingView.swift; sourceTree = "<group>"; };
 		DC73819F62A3B5DF470DF20C /* GlassModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassModal.swift; sourceTree = "<group>"; };
 		ECC3FCD2AB54D412820DC7E6 /* MomenApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomenApp.swift; sourceTree = "<group>"; };
-		F3CA95ADA776EB24FB87B85D /* SyncView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,9 +114,9 @@
 				7A6338A156A11B2EDB000469 /* FrameRatePickerView.swift */,
 				DC73819F62A3B5DF470DF20C /* GlassModal.swift */,
 				2DBCBDB0D20B7BA2514A3E8F /* MarkButtonView.swift */,
+				1443CC11B531AA8F592B6E48 /* ScreenHeader.swift */,
 				D369730FC28811FE2CD3B0D3 /* ShareSheet.swift */,
 				10C60DC81E9ACD2B745BA35E /* TimecodeDisplayView.swift */,
-				7D64BFF0A0137513D730704B /* TimecodeInputView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -133,11 +133,11 @@
 			isa = PBXGroup;
 			children = (
 				59015A16CF481098ADC392C1 /* ClapListenView.swift */,
-				B74752193EE04BDD650C1065 /* CreateSessionView.swift */,
+				B6957B62B4EBF7890CF00E4F /* ClipPrefixView.swift */,
+				D3FDF8911C97EEBF63A8986A /* CreateProjectView.swift */,
 				D4015CB7649E24BCE90D0D41 /* LoggingView.swift */,
-				AA2801F45D508F559C17B32C /* RollView.swift */,
-				708FF2D8431A50BF3D53FFAD /* SessionsListView.swift */,
-				F3CA95ADA776EB24FB87B85D /* SyncView.swift */,
+				000FFD15CC1F2A2FD0646F79 /* ProjectDetailView.swift */,
+				878749BFA7EBE687D5E0215C /* ProjectsListView.swift */,
 				A5CBC875DB8E70D4744C4D48 /* Components */,
 			);
 			path = Views;
@@ -248,7 +248,8 @@
 			files = (
 				C903F9A1333A23A5B6F0D395 /* ClapDetector.swift in Sources */,
 				411914C30160847C2139CE73 /* ClapListenView.swift in Sources */,
-				DFAAF60CB61D7393C7688DA7 /* CreateSessionView.swift in Sources */,
+				D1EB8CEBB306813D886C1C0A /* ClipPrefixView.swift in Sources */,
+				E501B78F768BB9F92ABA0A22 /* CreateProjectView.swift in Sources */,
 				8CFB42AEC5F6F59B2D9BC704 /* ExportService.swift in Sources */,
 				A925A6C9ED7C28607CD8FA74 /* FrameRatePickerView.swift in Sources */,
 				C63C017C08E8B678480A41DB /* GlassModal.swift in Sources */,
@@ -257,15 +258,14 @@
 				DF2AD7A9D6F148B5135844B6 /* MarkButtonView.swift in Sources */,
 				C5D0F6D35627CD7E0B753AAB /* Models.swift in Sources */,
 				AA4740FD96FF9D0289704209 /* MomenApp.swift in Sources */,
-				F3217BCA02470BD3FCDD8FAD /* RollView.swift in Sources */,
+				E92A2CF431B6E09A6784543A /* ProjectDetailView.swift in Sources */,
+				EAEB48DCADE79317497080F6 /* ProjectsListView.swift in Sources */,
 				2F843FFA21E7FDAEDE88C76D /* Router.swift in Sources */,
-				A58E3EAF35223B1C017E3016 /* SessionsListView.swift in Sources */,
+				BEE3BE696C94A88D1F5ACC6B /* ScreenHeader.swift in Sources */,
 				602D7AE7D4803F17459A4174 /* ShareSheet.swift in Sources */,
-				C87D99491DBA61EF03AA01D5 /* SyncView.swift in Sources */,
 				2279339A69B4752200B0189F /* Theme.swift in Sources */,
 				8566862610E25D02F0A06766 /* TimeSource.swift in Sources */,
 				B9212C2431975AD3F163F872 /* TimecodeDisplayView.swift in Sources */,
-				CA82910FBA99895F96AB6028 /* TimecodeInputView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -279,13 +279,13 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = M9ULD6M5Z3;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = Momen;
+				INFOPLIST_KEY_CFBundleDisplayName = MONTA;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Momen uses the microphone to detect clap sounds for timecode sync.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "MONTA uses the microphone to detect claps for audio sync.";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UIUserInterfaceStyle = Dark;
@@ -364,13 +364,13 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = M9ULD6M5Z3;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = Momen;
+				INFOPLIST_KEY_CFBundleDisplayName = MONTA;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Momen uses the microphone to detect clap sounds for timecode sync.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "MONTA uses the microphone to detect claps for audio sync.";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UIUserInterfaceStyle = Dark;

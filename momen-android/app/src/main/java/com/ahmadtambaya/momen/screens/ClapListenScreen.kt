@@ -39,19 +39,18 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.ahmadtambaya.momen.Nav
 import com.ahmadtambaya.momen.Route
 import com.ahmadtambaya.momen.audio.ClapDetector
+import com.ahmadtambaya.momen.core.FrameRate
 import com.ahmadtambaya.momen.core.MomenConstants
-import com.ahmadtambaya.momen.core.SyncMethod
 import com.ahmadtambaya.momen.data.Repository
 import com.ahmadtambaya.momen.ui.BackButton
+import com.ahmadtambaya.momen.ui.Haptics
 import com.ahmadtambaya.momen.ui.Pill
 import com.ahmadtambaya.momen.ui.T
 import com.ahmadtambaya.momen.ui.glassPill
@@ -62,9 +61,8 @@ import kotlinx.coroutines.delay
  * auto-creates the SYNC marker at t=0, and continues to logging.
  */
 @Composable
-fun ClapListenScreen(repo: Repository, nav: Nav, route: Route.ClapListen) {
+fun ClapListenScreen(repo: Repository, nav: Nav, clipId: String) {
     val context = LocalContext.current
-    val haptics = LocalHapticFeedback.current
 
     var permissionState by remember {
         mutableStateOf(
@@ -74,6 +72,9 @@ fun ClapListenScreen(repo: Repository, nav: Nav, route: Route.ClapListen) {
     }
     var detected by remember { mutableStateOf(false) }
     var meterDb by remember { mutableStateOf(-60.0) }
+    var frameRate by remember { mutableStateOf(FrameRate.FPS_24) }
+
+    LaunchedEffect(Unit) { repo.getClip(clipId)?.let { frameRate = it.frameRate } }
 
     val currentDetected by rememberUpdatedState(detected)
 
@@ -83,10 +84,10 @@ fun ClapListenScreen(repo: Repository, nav: Nav, route: Route.ClapListen) {
             onClap = { clapUptimeMs ->
                 if (currentDetected) return@ClapDetector
                 detected = true
-                repo.recordSync(route.sessionId, SyncMethod.CLAP, null, 0.0, clapUptimeMs)
+                repo.recordClipSync(clipId, clapUptimeMs)
                 // Auto-create the SYNC marker at t=0.
                 repo.addMarker(
-                    route.sessionId, 0.0, "00:00:00:00",
+                    clipId, 0.0, "00:00:00:00",
                     MomenConstants.SYNC_NOTE, isSyncPoint = true)
             })
     }
@@ -109,10 +110,10 @@ fun ClapListenScreen(repo: Repository, nav: Nav, route: Route.ClapListen) {
 
     LaunchedEffect(detected) {
         if (detected) {
-            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+            Haptics.tick(context)
             detector.stop()
             delay(700)
-            nav.replace(Route.Logging(route.sessionId))
+            nav.replace(Route.Logging(clipId))
         }
     }
 
@@ -141,15 +142,21 @@ fun ClapListenScreen(repo: Repository, nav: Nav, route: Route.ClapListen) {
                     style = T.mono(10, color = T.TextTertiary, letterSpacing = 4.0))
                 Spacer(Modifier.height(16.dp))
                 Text(
-                    "Grant microphone access in Settings,\nor use Manual sync instead.",
+                    "Grant microphone access in Settings,\nor tap below to sync by hand.",
                     style = T.sans(14, color = T.TextTertiary), textAlign = TextAlign.Center)
                 Spacer(Modifier.height(24.dp))
                 Text(
-                    "Go Back", style = T.mono(12, color = T.TextSecondary),
+                    "Sync manually", style = T.mono(12, color = T.TextSecondary),
                     modifier = Modifier
                         .glassPill()
-                        .clickable { nav.pop() }
+                        .clickable { detector.triggerManually() }
                         .padding(horizontal = 24.dp, vertical = 14.dp))
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    "Go Back", style = T.mono(12, color = T.TextTertiary),
+                    modifier = Modifier
+                        .clickable { nav.pop() }
+                        .padding(horizontal = 24.dp, vertical = 10.dp))
             }
         } else {
             if (!detected) {
@@ -207,7 +214,7 @@ fun ClapListenScreen(repo: Repository, nav: Nav, route: Route.ClapListen) {
 
                 Spacer(Modifier.height(32.dp))
                 Text(
-                    if (detected) "Sync captured — starting session…"
+                    if (detected) "Sync captured — starting clip…"
                     else "Clap near the microphone",
                     style = T.sans(14, color = T.TextTertiary))
 
@@ -252,7 +259,7 @@ fun ClapListenScreen(repo: Repository, nav: Nav, route: Route.ClapListen) {
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 24.dp),
             ) {
-                Pill("${route.frameRate.displayName} fps")
+                Pill("${frameRate.displayName} fps")
             }
         }
     }

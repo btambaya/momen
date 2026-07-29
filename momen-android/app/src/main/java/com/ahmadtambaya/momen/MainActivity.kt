@@ -12,26 +12,23 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.ahmadtambaya.momen.core.FrameRate
 import com.ahmadtambaya.momen.data.Repository
 import com.ahmadtambaya.momen.screens.ClapListenScreen
-import com.ahmadtambaya.momen.screens.CreateSessionScreen
+import com.ahmadtambaya.momen.screens.ClipPrefixScreen
+import com.ahmadtambaya.momen.screens.CreateProjectScreen
 import com.ahmadtambaya.momen.screens.LoggingScreen
-import com.ahmadtambaya.momen.screens.RollScreen
-import com.ahmadtambaya.momen.screens.SessionsListScreen
-import com.ahmadtambaya.momen.screens.SyncScreen
+import com.ahmadtambaya.momen.screens.ProjectDetailScreen
+import com.ahmadtambaya.momen.screens.ProjectsListScreen
 import com.ahmadtambaya.momen.ui.T
 
-/** Navigation routes — mirrors the iOS Router / RN RootStackParamList. */
+/** Navigation routes. Flow: Projects → New Project → Clip prefix →
+ *  Clap sync → Logging; and Project detail → New Clip → Clap → Logging. */
 sealed interface Route {
-    data object CreateSession : Route
-    data class Sync(val sessionId: String, val frameRate: FrameRate) : Route
-    data class Roll(
-        val sessionId: String, val frameRate: FrameRate,
-        val cameraTc: String, val cameraTcMs: Double,
-    ) : Route
-    data class ClapListen(val sessionId: String, val frameRate: FrameRate) : Route
-    data class Logging(val sessionId: String) : Route
+    data object CreateProject : Route
+    data class ClipPrefix(val projectId: String) : Route
+    data class ProjectDetail(val projectId: String) : Route
+    data class ClapListen(val clipId: String) : Route
+    data class Logging(val clipId: String) : Route
 }
 
 class Nav {
@@ -39,7 +36,6 @@ class Nav {
 
     fun push(route: Route) = stack.add(route)
 
-    /** Swap the top of the stack — equivalent of RN navigation.replace(). */
     fun replace(route: Route) {
         if (stack.isEmpty()) stack.add(route) else stack[stack.lastIndex] = route
     }
@@ -49,6 +45,17 @@ class Nav {
     }
 
     fun popToRoot() = stack.clear()
+
+    /** Pop back to a project's detail screen (used after CUT / leave). */
+    fun popToProject(projectId: String) {
+        val idx = stack.indexOfLast { it is Route.ProjectDetail && it.projectId == projectId }
+        if (idx >= 0) {
+            while (stack.lastIndex > idx) stack.removeAt(stack.lastIndex)
+        } else {
+            stack.clear()
+            stack.add(Route.ProjectDetail(projectId))
+        }
+    }
 }
 
 class MainActivity : ComponentActivity() {
@@ -62,22 +69,17 @@ class MainActivity : ComponentActivity() {
             val repo = remember { Repository(applicationContext) }
 
             Box(
-                Modifier
-                    .fillMaxSize()
-                    .background(T.BgPrimary)
-                    .safeDrawingPadding(),
+                Modifier.fillMaxSize().background(T.BgPrimary).safeDrawingPadding(),
             ) {
-                // System back pops the stack; LoggingScreen registers its own
-                // (inner wins) to show the leave-session confirmation.
                 BackHandler(enabled = nav.stack.isNotEmpty()) { nav.pop() }
 
                 when (val route = nav.stack.lastOrNull()) {
-                    null -> SessionsListScreen(repo, nav)
-                    is Route.CreateSession -> CreateSessionScreen(repo, nav)
-                    is Route.Sync -> SyncScreen(nav, route.sessionId, route.frameRate)
-                    is Route.Roll -> RollScreen(repo, nav, route)
-                    is Route.ClapListen -> ClapListenScreen(repo, nav, route)
-                    is Route.Logging -> LoggingScreen(repo, nav, route.sessionId)
+                    null -> ProjectsListScreen(repo, nav)
+                    is Route.CreateProject -> CreateProjectScreen(repo, nav)
+                    is Route.ClipPrefix -> ClipPrefixScreen(repo, nav, route.projectId)
+                    is Route.ProjectDetail -> ProjectDetailScreen(repo, nav, route.projectId)
+                    is Route.ClapListen -> ClapListenScreen(repo, nav, route.clipId)
+                    is Route.Logging -> LoggingScreen(repo, nav, route.clipId)
                 }
             }
         }
